@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.jptrzy.inventory.backpack.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "SlotAccessor",
+    "PlayerEntityAccessor",
+    "HandledScreenAccessor",
+    "ScreenHandlerAccessor",
+    "ScreenHandlerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
