@@ -1,6 +1,9 @@
 package net.jptrzy.inventory.backpack.screen;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.ScreenHandlerAccessor;
 import net.jptrzy.inventory.backpack.mixin.SlotAccessor;
@@ -10,14 +13,16 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class BackpackScreenHandler extends PlayerScreenHandler {
+
+    SimpleInventory backpack_inventory;
 
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory.player);
@@ -46,25 +51,59 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         int left = anchor.x;
         int top = anchor.y - 58;
 
-        ItemStack backpack = player.getMainHandStack();
-        SimpleInventory inv = ((BackpackItem) backpack.getItem()).inventory;
+//        ItemStack backpack = player.getMainHandStack();
+        ItemStack backpack = player.getInventory().armor.get(2);
+//        backpack.setCustomName(new LiteralText("OPEN"));
+//        SimpleInventory inv = ((BackpackItem) backpack.getItem()).inventory;
+        backpack_inventory = new BackpackInventory(backpack);
+        backpack_inventory.onOpen(player);
         for(int i = 0; i < 3; ++i)
             for(int j = 0; j < 9; ++j) {
-                int k = j + i * 9+36;
-                addSlot(new Slot(inv, k, left + j * 18, top + i * 18));
+                int k = j + i * 9 + 36;
+                addSlot(new Slot(backpack_inventory, k, left + j * 18, top + i * 18));
             }
     }
 
+
+    @Override
+    public void close(PlayerEntity player) {
+        super.close(player);
+        backpack_inventory.onClose(player);
+    }
 
     @Override
     public boolean canUse(PlayerEntity player) {
         return true;
     }
 
-
     //alternatively in constructor '((ScreenHandlerAccessor) this).setType(Main.BACKPACK_SCREEN_HANDLER);'
     @Override
     public ScreenHandlerType<?> getType() {
         return Main.BACKPACK_SCREEN_HANDLER;
     }
+
+//    @Override
+//    public void setStackInSlot(int slot, int revision, ItemStack stack) {
+//        Main.LOGGER.warn(slot);
+//        super.setStackInSlot(slot, revision, stack);
+//    }
+
+
+//    @Environment(EnvType.SERVER)
+//    @Override
+//    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+//        super.onSlotClick(slotIndex, button, actionType, player);
+//
+//        Main.LOGGER.warn(slotIndex);
+//        Main.LOGGER.warn(getSlot(slotIndex).getStack());
+//        Main.LOGGER.warn(getSlot(slotIndex).getIndex());
+//        Main.LOGGER.warn(actionType);
+//
+//    }
+
+//    @Override
+//    public void onContentChanged(Inventory inventory) {
+//        super.onContentChanged(inventory);
+//        Main.LOGGER.warn("SSSS");
+//    }
 }

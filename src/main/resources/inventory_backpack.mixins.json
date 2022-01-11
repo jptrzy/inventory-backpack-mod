@@ -8,6 +8,9 @@
     "PlayerEntityAccessor",
     "HandledScreenAccessor",
     "ScreenHandlerAccessor",
+    "SimpleInventoryAccessor",
+    "ScreenAccessor",
+    "PlayerEntityMixin",
     "ScreenHandlerMixin"
   ],
   "client": [

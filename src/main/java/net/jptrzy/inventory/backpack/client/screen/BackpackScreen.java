@@ -1,22 +1,18 @@
 package net.jptrzy.inventory.backpack.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.mixin.HandledScreenAccessor;
-import net.jptrzy.inventory.backpack.mixin.PlayerEntityAccessor;
-import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.jptrzy.inventory.backpack.mixin.ScreenAccessor;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -39,6 +35,7 @@ public class BackpackScreen extends InventoryScreen {
         int j = this.y;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         drawEntity(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, this.client.player);
+        moveRecipeButton();
     }
 
     @Override
@@ -46,5 +43,15 @@ public class BackpackScreen extends InventoryScreen {
         backgroundHeight = 224;
         super.init();
     }
+
+
+
+    //TODO could be make more optimal
+    public void moveRecipeButton(){
+        for(Drawable widget: ((ScreenAccessor)this).getDrawables())
+            if(widget instanceof TexturedButtonWidget && ((TexturedButtonWidget) widget).y == this.height / 2 - 22) //without last line it will "fly" to the infinity
+                ((TexturedButtonWidget) widget).setPos(((TexturedButtonWidget) widget).x, ((TexturedButtonWidget) widget).y-29);
+    }
+
 
 }

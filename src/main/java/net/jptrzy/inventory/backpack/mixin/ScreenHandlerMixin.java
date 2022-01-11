@@ -1,11 +1,16 @@
 package net.jptrzy.inventory.backpack.mixin;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
+import net.minecraft.screen.slot.SlotActionType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,9 +30,9 @@ public class ScreenHandlerMixin {
 //    private ItemStack cursorStack;
 //    private int revision;
 //
-//    protected ScreenHandler getThis(){
-//        return ((ScreenHandler) (Object) this);
-//    }
+    protected ScreenHandler getThis(){
+        return ((ScreenHandler) (Object) this);
+    }
 //
 //    @Inject(at = @At("HEAD"), method = "updateSlotStacks", cancellable = true)
 //    private void updateSlotStacks(int revision, List<ItemStack> stacks, ItemStack cursorStack, CallbackInfo ci) {
@@ -53,4 +58,42 @@ public class ScreenHandlerMixin {
 ////        revision = revision;
 ////        ci.cancel();
 //    }
+
+
+//    @Inject(at = @At("HEAD"), method = "setStackInSlot", cancellable = true)
+//    public void setStackInSlot(int slot, int revision, ItemStack stack,  CallbackInfo ci) {
+//        Main.LOGGER.warn(slot);
+//    }
+
+//    @Environment(EnvType.SERVER)
+    @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
+    private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
+        if(!(getThis() instanceof PlayerScreenHandler)){return;}
+        if(player.world.isClient()){return;}
+        if(slotIndex<0 || slotIndex>=getThis().slots.size()){
+            Main.LOGGER.warn("SlotIndex out of range.");
+            return;
+        }
+        if(getThis().getSlot(slotIndex).getIndex() != 38){return;}
+
+        ItemStack cursorStack = getThis().getCursorStack();
+
+        if(getThis().getSlot(slotIndex).getStack().getItem() instanceof BackpackItem){
+            player.openHandledScreen((BackpackItem) getThis().getSlot(slotIndex).getStack().getItem());
+        }else{
+//            player.closeHandledScreen();
+            player.currentScreenHandler = player.playerScreenHandler;
+        }
+
+        player.currentScreenHandler.setCursorStack(cursorStack);
+
+
+        Main.LOGGER.warn(player.world.isClient());
+        Main.LOGGER.warn(slotIndex);
+        Main.LOGGER.warn(getThis().getSlot(slotIndex).getStack());
+        Main.LOGGER.warn(getThis().getSlot(slotIndex).getIndex());
+        Main.LOGGER.warn(actionType);
+    }
+
+
 }
