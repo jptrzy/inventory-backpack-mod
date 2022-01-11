@@ -1,16 +1,21 @@
 package net.jptrzy.inventory.backpack.mixin;
 
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -69,30 +74,36 @@ public class ScreenHandlerMixin {
     @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
     private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if(!(getThis() instanceof PlayerScreenHandler)){return;}
-        if(player.world.isClient()){return;}
         if(slotIndex<0 || slotIndex>=getThis().slots.size()){
             Main.LOGGER.warn("SlotIndex out of range.");
             return;
         }
         if(getThis().getSlot(slotIndex).getIndex() != 38){return;}
 
-        ItemStack cursorStack = getThis().getCursorStack();
+        if(player.world.isClient()){return;}
 
-        if(getThis().getSlot(slotIndex).getStack().getItem() instanceof BackpackItem){
-            player.openHandledScreen((BackpackItem) getThis().getSlot(slotIndex).getStack().getItem());
+
+
+        if(!(getThis() instanceof BackpackScreenHandler) && BackpackItem.isWearingIt(player)){
+            BackpackItem.requestBackpackMenu(true);
+        }else if(getThis() instanceof BackpackScreenHandler){
+            BackpackItem.requestBackpackMenu(false);
+            MinecraftClient.getInstance().setScreen(new InventoryScreen(player));
         }else{
-//            player.closeHandledScreen();
-            player.currentScreenHandler = player.playerScreenHandler;
+            Main.LOGGER.warn("Unexpected situation");
         }
 
-        player.currentScreenHandler.setCursorStack(cursorStack);
 
 
-        Main.LOGGER.warn(player.world.isClient());
-        Main.LOGGER.warn(slotIndex);
-        Main.LOGGER.warn(getThis().getSlot(slotIndex).getStack());
-        Main.LOGGER.warn(getThis().getSlot(slotIndex).getIndex());
-        Main.LOGGER.warn(actionType);
+        Main.LOGGER.warn("onSlotClick");
+
+
+
+//        Main.LOGGER.warn(player.world.isClient());
+//        Main.LOGGER.warn(slotIndex);
+//        Main.LOGGER.warn(getThis().getSlot(slotIndex).getStack());
+//        Main.LOGGER.warn(getThis().getSlot(slotIndex).getIndex());
+//        Main.LOGGER.warn(actionType);
     }
 
 

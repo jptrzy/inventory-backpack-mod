@@ -1,5 +1,7 @@
 package net.jptrzy.inventory.backpack.item;
 
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
@@ -7,6 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -66,5 +69,21 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     @Override
     public Text getDisplayName() {
         return null;
+    }
+
+    public static boolean isWearingIt(PlayerEntity player){
+        return player.getInventory().armor.get(2).getItem() instanceof BackpackItem;
+    }
+
+    public static ItemStack getIt(PlayerEntity player){
+        return player.getInventory().armor.get(2);
+    }
+
+    public static void requestBackpackMenu(boolean open){
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        NbtCompound tag = new NbtCompound();
+        tag.putBoolean("Open", open);
+        buf.writeNbt(tag);
+        ClientPlayNetworking.send(Main.id("open_backpack"), buf);
     }
 }

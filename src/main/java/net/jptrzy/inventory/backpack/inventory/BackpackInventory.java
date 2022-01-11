@@ -1,6 +1,7 @@
 package net.jptrzy.inventory.backpack.inventory;
 
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.SimpleInventoryAccessor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
@@ -47,7 +48,7 @@ public class BackpackInventory extends SimpleInventory {
     @Override
     public void onOpen(PlayerEntity player){
         super.onOpen(player);
-        Main.LOGGER.warn("OPEN");
+//        Main.LOGGER.warn("OPEN");
         if(owner.getNbt().contains("Inventory"))
             Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
 //            this.readNbtList(owner.getNbt().getList("Inventory", 10));
@@ -57,7 +58,7 @@ public class BackpackInventory extends SimpleInventory {
     @Override
     public void onClose(PlayerEntity player){
         super.onClose(player);
-        Main.LOGGER.warn("CLOSE");
+//        Main.LOGGER.warn("CLOSE");
         Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
 //        owner.getNbt().put("Inventory", this.toNbtList());
     }
