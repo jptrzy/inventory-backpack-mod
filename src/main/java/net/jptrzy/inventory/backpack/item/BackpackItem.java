@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -133,6 +134,7 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     }
 
     //Trusts its caller and don't check if you can open Backpack Handler
+    //TODO REWRITE WHOLE FUNC
     public static void openBackpackHandler(boolean open, ServerPlayerEntity player){
         if(player.world.isClient()){
             Main.LOGGER.warn("Unauthorized use.");
@@ -140,10 +142,11 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
         }
         if(player.currentScreenHandler != null){
             ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
-
             player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
 
-            //open && player.currentScreenHandler == player.playerScreenHandler
+            dropCraftingInventory(player);
+
+            //oplayer.currentScreenHandler == player.playerScreenHandler
             if(BackpackItem.isWearingIt(player)){
                 if(open) {
                     player.openHandledScreen((BackpackItem) BackpackItem.getIt(player).getItem());
@@ -162,6 +165,24 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
             player.currentScreenHandler.updateToClient();
         }else{
             Main.LOGGER.warn("Is this even possible?");
+        }
+    }
+
+    //Literally dropInventory from ScreenHandler with CraftingInput
+    public static void dropCraftingInventory(PlayerEntity player) {
+        PlayerScreenHandler sh = ((PlayerScreenHandler) player.currentScreenHandler);
+        int i;
+        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
+            for(i = 0; i < sh.getCraftingInput().size(); ++i) {
+                player.dropItem(sh.getCraftingInput().removeStack(i), false);
+            }
+        } else {
+            for(i = 0; i < sh.getCraftingInput().size(); ++i) {
+                PlayerInventory playerInventory = player.getInventory();
+                if (playerInventory.player instanceof ServerPlayerEntity) {
+                    playerInventory.offerOrDrop(sh.getCraftingInput().removeStack(i));
+                }
+            }
         }
     }
 }

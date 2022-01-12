@@ -58,7 +58,7 @@ public class BackpackInventory extends SimpleInventory {
             Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
         }else{
             //TODO After death its save after some time (and after pressing restart`    ) you could yous it
-            Main.LOGGER.warn("TRY SAVING {}", this);
+//            Main.LOGGER.warn("TRY SAVING {}", this);
         }
     }
 
