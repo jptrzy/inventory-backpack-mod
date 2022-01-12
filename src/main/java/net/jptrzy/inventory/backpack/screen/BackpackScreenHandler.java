@@ -1,24 +1,17 @@
 package net.jptrzy.inventory.backpack.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
-import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.ScreenHandlerAccessor;
 import net.jptrzy.inventory.backpack.mixin.SlotAccessor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 
 public class BackpackScreenHandler extends PlayerScreenHandler {
 
@@ -85,31 +78,4 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
     public ScreenHandlerType<?> getType() {
         return Main.BACKPACK_SCREEN_HANDLER;
     }
-
-//    @Override
-//    public void setStackInSlot(int slot, int revision, ItemStack stack) {
-//        Main.LOGGER.warn(slot);
-//        super.setStackInSlot(slot, revision, stack);
-//    }
-
-
-//    @Environment(EnvType.SERVER)
-//    @Override
-//    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-//        super.onSlotClick(slotIndex, button, actionType, player);
-//
-//        Main.LOGGER.warn(slotIndex);
-//        Main.LOGGER.warn(getSlot(slotIndex).getStack());
-//        Main.LOGGER.warn(getSlot(slotIndex).getIndex());
-//        Main.LOGGER.warn(actionType);
-//
-//    }
-
-//    @Override
-//    public void onContentChanged(Inventory inventory) {
-//        super.onContentChanged(inventory);
-//        Main.LOGGER.warn("SSSS");
-//    }
-
-
 }
