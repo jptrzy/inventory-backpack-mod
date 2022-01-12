@@ -4,11 +4,13 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.client.renderer.BackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.client.screen.BackpackScreen;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -32,6 +34,8 @@ public class Client implements ClientModInitializer {
             }
             return EnchantmentHelper.get(itemStack).containsKey(Enchantments.BINDING_CURSE) ? 1 : 0;
         });
+
+        ArmorRenderer.register(new BackpackArmorRenderer(), Main.BACKPACK);
 
         registerPacketHandlers();
     }
