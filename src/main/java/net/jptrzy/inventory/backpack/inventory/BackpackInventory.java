@@ -1,11 +1,15 @@
 package net.jptrzy.inventory.backpack.inventory;
 
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.SimpleInventoryAccessor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class BackpackInventory extends SimpleInventory {
 
@@ -42,11 +46,20 @@ public class BackpackInventory extends SimpleInventory {
         if(player.world.isClient()){return;}
         if(!owner.isOf(Main.BACKPACK)){return;}
 
+        BackpackItem.lock(owner, false);
+
         Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
     }
 
+    //TODO After death its save after some time you could yous it
     public void saveContent(){
-        Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+        if(!BackpackItem.isLock(owner)){
+//            Main.LOGGER.warn("SAVE");
+            Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+        }else{
+            //TODO After death its save after some time (and after pressing restart`    ) you could yous it
+            Main.LOGGER.warn("TRY SAVING {}", this);
+        }
     }
 
     @Override
@@ -56,5 +69,15 @@ public class BackpackInventory extends SimpleInventory {
         if(!owner.isOf(Main.BACKPACK)){return;}
 
         this.saveContent();
+    }
+
+    public void dropAll(PlayerEntity player) {
+        for(int i = 0; i < size(); ++i) {
+            ItemStack itemStack = (ItemStack)getStack(i);
+            if (!itemStack.isEmpty()) {
+                player.dropItem(itemStack, true, false);
+                setStack(i, ItemStack.EMPTY);
+            }
+        }
     }
 }

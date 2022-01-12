@@ -10,6 +10,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
@@ -81,6 +83,15 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     @Override
     public boolean isEnchantable(ItemStack itemstack) {return false;}
 
+    @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        Main.LOGGER.warn("usageTick");
+    }
+
+    @Override
+    public void onItemEntityDestroyed(ItemEntity entity) {
+        Main.LOGGER.warn("onItemEntityDestroyed");
+    }
 
     //Screen
 
@@ -97,6 +108,16 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     @Override
     public Text getDisplayName() {
         return null;
+    }
+
+    //  Statics
+
+    public static void lock(ItemStack itemStack, boolean lock){
+        itemStack.getNbt().putBoolean("Lock", lock);
+    }
+
+    public static boolean isLock(ItemStack itemStack){
+        return itemStack.getNbt().contains("Lock") && itemStack.getNbt().getBoolean("Lock");
     }
 
     public static boolean isWearingIt(PlayerEntity player){
@@ -122,8 +143,13 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
 
             player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
 
-            if(open && player.currentScreenHandler == player.playerScreenHandler && BackpackItem.isWearingIt(player)){
-                player.openHandledScreen((BackpackItem) BackpackItem.getIt(player).getItem());
+            //open && player.currentScreenHandler == player.playerScreenHandler
+            if(BackpackItem.isWearingIt(player)){
+                if(open) {
+                    player.openHandledScreen((BackpackItem) BackpackItem.getIt(player).getItem());
+                }else{
+                    ServerPlayNetworking.send(player, Main.id("reload_screen"), new PacketByteBuf(Unpooled.buffer()));
+                }
             }else if(!open && player.currentScreenHandler instanceof BackpackScreenHandler && !BackpackItem.isWearingIt(player)){
                 ServerPlayNetworking.send(player, Main.id("open_inventory"), new PacketByteBuf(Unpooled.buffer()));
                 player.currentScreenHandler.close(player);

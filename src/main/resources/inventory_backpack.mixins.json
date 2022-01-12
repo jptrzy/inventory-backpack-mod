@@ -11,7 +11,8 @@
     "SimpleInventoryAccessor",
     "ScreenAccessor",
     "ScreenHandlerMixin",
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "PlayerEntityMixin"
   ],
   "client": [
   ],

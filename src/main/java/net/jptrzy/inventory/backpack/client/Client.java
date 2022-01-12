@@ -43,5 +43,12 @@ public class Client implements ClientModInitializer {
                         client.setScreen(new InventoryScreen(client.player));
                     });
                 });
+        ClientPlayNetworking.registerGlobalReceiver(Main.id("reload_screen"),
+                (client, handler, buf, sender) -> {
+                    client.execute(() -> {
+                        if(client.currentScreen instanceof BackpackScreen)
+                            ((BackpackScreen)client.currentScreen).checkColor();
+                    });
+                });
     }
 }
