@@ -3,5 +3,13 @@
   "textures": {
     "layer0": "inventory_backpack:item/backpack",
     "layer1": "inventory_backpack:item/backpack_overlay"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "locked": 1
+      },
+      "model": "inventory_backpack:item/backpack_locked"
+    }
+  ]
 }

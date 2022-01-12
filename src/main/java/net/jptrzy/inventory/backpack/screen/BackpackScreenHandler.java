@@ -22,7 +22,7 @@ import net.minecraft.text.Text;
 
 public class BackpackScreenHandler extends PlayerScreenHandler {
 
-    SimpleInventory backpack_inventory;
+    private BackpackInventory backpackInventory;
 
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory.player);
@@ -55,20 +55,23 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         ItemStack backpack = player.getInventory().armor.get(2);
 //        backpack.setCustomName(new LiteralText("OPEN"));
 //        SimpleInventory inv = ((BackpackItem) backpack.getItem()).inventory;
-        backpack_inventory = new BackpackInventory(backpack);
-        backpack_inventory.onOpen(player);
+        backpackInventory = new BackpackInventory(backpack);
+        backpackInventory.onOpen(player);
         for(int i = 0; i < 3; ++i)
             for(int j = 0; j < 9; ++j) {
                 int k = j + i * 9 + 36;
-                addSlot(new Slot(backpack_inventory, k, left + j * 18, top + i * 18));
+                addSlot(new Slot(backpackInventory, k, left + j * 18, top + i * 18));
             }
     }
 
+    public BackpackInventory getBackpackInventory(){
+        return this.backpackInventory;
+    }
 
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        backpack_inventory.onClose(player);
+        backpackInventory.onClose(player);
     }
 
     @Override
@@ -106,4 +109,6 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
 //        super.onContentChanged(inventory);
 //        Main.LOGGER.warn("SSSS");
 //    }
+
+
 }

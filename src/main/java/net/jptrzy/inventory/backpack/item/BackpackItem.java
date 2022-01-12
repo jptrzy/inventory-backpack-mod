@@ -1,10 +1,17 @@
 package net.jptrzy.inventory.backpack.item;
 
 import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -20,6 +27,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHandlerFactory {
 
     private static final Text TITLE = new TranslatableText("container." + Main.MOD_ID + ".backpack");
@@ -33,34 +42,57 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
         );
     }
 
-//    @Override
-//    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-//        ItemStack itemStack = user.getStackInHand(hand);
-//
-//        if(!(itemStack.getItem() instanceof BackpackItem)){
-//            return TypedActionResult.pass(itemStack);
-//        }
-//
-//        if (world.isClient) {
-//            return TypedActionResult.success(itemStack, true);
-//        }
-//
-////        user.openHandledScreen(((BackpackItem) itemStack.getItem()).createScreenHandlerFactory());
-////        ((ServerWorldAccess) world).getPlayerByUuid(user.getUuid()).openHandledScreen(itemStack);
-//        user.openHandledScreen(this);
-//
-//        return TypedActionResult.success(itemStack, true);
-//    }
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
+
+        if (world.isClient) {return;}
+        if (!(entity instanceof PlayerEntity)) {return;}
+        if (!BackpackItem.isWearingIt((PlayerEntity) entity)) {return;}
+        if (!(((PlayerEntity) entity).currentScreenHandler instanceof BackpackScreenHandler)) {
+//            Main.LOGGER.warn("Something is wrong...");
+            return;
+        }
+
+
+
+        boolean hasItems = !((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).getBackpackInventory().isEmpty();
+        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
+        boolean changedEnchants = false;
+        boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
+
+        if(hasItems){
+            if(!isCursed) {
+                enchants.put(Enchantments.BINDING_CURSE, 1);
+                changedEnchants = true;
+            }
+        }else{
+            if(isCursed) {
+                enchants.remove(Enchantments.BINDING_CURSE);
+                changedEnchants = true;
+            }
+        }
+
+        if(changedEnchants){
+            EnchantmentHelper.set(enchants, stack);
+        }
+    }
+
+    @Override
+    public boolean hasGlint(ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack itemstack) {return false;}
+
+    //Screen
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new BackpackScreenHandler(syncId, player);
     }
-
-//    public NamedScreenHandlerFactory createScreenHandlerFactory() {
-//        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new BackpackScreenHandler(i, playerEntity), TITLE);
-//    }
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
@@ -79,11 +111,31 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
         return player.getInventory().armor.get(2);
     }
 
-    public static void requestBackpackMenu(boolean open){
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        NbtCompound tag = new NbtCompound();
-        tag.putBoolean("Open", open);
-        buf.writeNbt(tag);
-        ClientPlayNetworking.send(Main.id("open_backpack"), buf);
+    //Trusts its caller and don't check if can open Backpack Handler
+    public static void openBackpackHandler(boolean open, ServerPlayerEntity player){
+        if(player.world.isClient()){
+            Main.LOGGER.warn("Unauthorized use.");
+            return;
+        }
+        if(player.currentScreenHandler != null){
+            ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
+
+            player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
+
+            if(open && player.currentScreenHandler == player.playerScreenHandler && BackpackItem.isWearingIt(player)){
+                player.openHandledScreen((BackpackItem) BackpackItem.getIt(player).getItem());
+            }else if(!open && player.currentScreenHandler instanceof BackpackScreenHandler && !BackpackItem.isWearingIt(player)){
+                ServerPlayNetworking.send(player, Main.id("open_inventory"), new PacketByteBuf(Unpooled.buffer()));
+                player.currentScreenHandler.close(player);
+                player.currentScreenHandler = player.playerScreenHandler;
+            }else{
+                Main.LOGGER.warn("Unexpected situation");
+            }
+
+            player.currentScreenHandler.setCursorStack(cursorStack);
+            player.currentScreenHandler.updateToClient();
+        }else{
+            Main.LOGGER.warn("Is this even possible?");
+        }
     }
 }

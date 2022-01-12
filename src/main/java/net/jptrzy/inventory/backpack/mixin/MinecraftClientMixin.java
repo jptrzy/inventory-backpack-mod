@@ -26,7 +26,7 @@ public class MinecraftClientMixin {
     @Inject(at = @At("HEAD"), method = "setScreen", cancellable = true)
     private void setScreen(@Nullable Screen screen, CallbackInfo ci){
         if(screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && BackpackItem.isWearingIt(getThis().player)){
-            BackpackItem.requestBackpackMenu(true);
+            ClientPlayNetworking.send(Main.id("open_backpack"), new PacketByteBuf(Unpooled.buffer()));
             ci.cancel();
         }
     }

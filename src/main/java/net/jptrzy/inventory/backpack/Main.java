@@ -35,28 +35,11 @@ public class Main implements ModInitializer {
 	private void registerPacketHandlers() {
 		ServerPlayNetworking.registerGlobalReceiver(Main.id("open_backpack"),
 				(server, player, networkHandler, buf, sender) -> {
-					boolean open = buf.readNbt().getBoolean("Open");
 					server.execute(() -> {
-						Main.LOGGER.warn("get");
-						if(player.currentScreenHandler != null){
-							ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
-							player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
-
-							Main.LOGGER.warn(open);
-							Main.LOGGER.warn(player.currentScreenHandler);
-							Main.LOGGER.warn(BackpackItem.isWearingIt(player));
-
-							if(open && player.currentScreenHandler == player.playerScreenHandler && BackpackItem.isWearingIt(player)){
-								player.openHandledScreen((BackpackItem) BackpackItem.getIt(player).getItem());
-							}else if(player.currentScreenHandler instanceof BackpackScreenHandler){
-//								player.closeHandledScreen();
-								player.currentScreenHandler = player.playerScreenHandler;
-							}else{
-								Main.LOGGER.warn("Unexpected situation");
-							}
-
-							player.currentScreenHandler.setCursorStack(cursorStack);
-							player.currentScreenHandler.updateToClient();
+						if(player.currentScreenHandler == player.playerScreenHandler && BackpackItem.isWearingIt(player)){
+							BackpackItem.openBackpackHandler(true, player);
+						}else{
+							Main.LOGGER.warn("This shouldn't be possible.");
 						}
 					});
 				});

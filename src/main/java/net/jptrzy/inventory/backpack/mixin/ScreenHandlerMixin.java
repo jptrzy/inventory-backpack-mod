@@ -16,6 +16,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -73,29 +74,25 @@ public class ScreenHandlerMixin {
 //    @Environment(EnvType.SERVER)
     @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
     private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if(!(getThis() instanceof PlayerScreenHandler)){return;}
-        if(slotIndex<0 || slotIndex>=getThis().slots.size()){
-            Main.LOGGER.warn("SlotIndex out of range.");
-            return;
-        }
-        if(getThis().getSlot(slotIndex).getIndex() != 38){return;}
-
         if(player.world.isClient()){return;}
 
+        if(!(getThis() instanceof PlayerScreenHandler)){return;}
+
+        if(slotIndex<0 || slotIndex>=getThis().slots.size()){
+            if(!(slotIndex == -999 && (BackpackItem.isWearingIt(player) || getThis().getCursorStack().getItem() instanceof BackpackItem))){
+                Main.LOGGER.warn("SlotIndex out of range: " + slotIndex);
+                return;
+            }
+        }else if(getThis().getSlot(slotIndex).getIndex() != 38){return;}
 
 
-        if(!(getThis() instanceof BackpackScreenHandler) && BackpackItem.isWearingIt(player)){
-            BackpackItem.requestBackpackMenu(true);
-        }else if(getThis() instanceof BackpackScreenHandler){
-            BackpackItem.requestBackpackMenu(false);
-            MinecraftClient.getInstance().setScreen(new InventoryScreen(player));
+        if(BackpackItem.isWearingIt(player) || getThis() instanceof BackpackScreenHandler){
+            BackpackItem.openBackpackHandler(BackpackItem.isWearingIt(player), (ServerPlayerEntity) player);
         }else{
-            Main.LOGGER.warn("Unexpected situation");
+            Main.LOGGER.warn("don't work");
         }
 
 
-
-        Main.LOGGER.warn("onSlotClick");
 
 
 

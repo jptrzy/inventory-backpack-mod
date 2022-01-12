@@ -8,16 +8,19 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
 
 public class BackpackInventory extends SimpleInventory {
 
     ItemStack owner;
+    NbtCompound tag;
     int slotMove = -36;
 
     public BackpackInventory(ItemStack owner) {
         super(27);
         this.owner = owner;
+        this.tag = owner.getNbt();
     }
 
     public int moveSlot(int slot){
@@ -42,24 +45,40 @@ public class BackpackInventory extends SimpleInventory {
 
     @Override
     public void setStack(int slot, ItemStack stack) {
+//        Main.LOGGER.warn("test");
         super.setStack(moveSlot(slot), stack);
     }
+
+
 
     @Override
     public void onOpen(PlayerEntity player){
         super.onOpen(player);
-//        Main.LOGGER.warn("OPEN");
-        if(owner.getNbt().contains("Inventory"))
-            Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+        if(player.world.isClient()){return;}
+//        if(owner.getNbt().contains("Inventory")){
+        Main.LOGGER.warn(this);
+
+        Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
 //            this.readNbtList(owner.getNbt().getList("Inventory", 10));
 
+        Main.LOGGER.warn("LOAD" + this + owner.getNbt());
     }
 
     @Override
     public void onClose(PlayerEntity player){
         super.onClose(player);
+        if(player.world.isClient()){return;}
 //        Main.LOGGER.warn("CLOSE");
-        Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
 //        owner.getNbt().put("Inventory", this.toNbtList());
+
+        Main.LOGGER.warn("SAVE" + this + owner.getNbt());
+
+        Main.LOGGER.warn(player.currentScreenHandler.getCursorStack().toString());
+        Main.LOGGER.warn(this.owner);
+        Main.LOGGER.warn(this.tag);
+        Main.LOGGER.warn(this.owner.getNbt());
+
+        Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+
     }
 }
