@@ -23,6 +23,7 @@ import net.minecraft.text.Text;
 public class BackpackScreenHandler extends PlayerScreenHandler {
 
     private BackpackInventory backpackInventory;
+    public boolean dirtyBackpack = true;
 
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory.player);

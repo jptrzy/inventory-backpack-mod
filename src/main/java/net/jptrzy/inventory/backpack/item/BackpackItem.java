@@ -1,9 +1,6 @@
 package net.jptrzy.inventory.backpack.item;
 
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.jptrzy.inventory.backpack.Main;
@@ -16,14 +13,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,31 +26,32 @@ import java.util.Map;
 public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHandlerFactory {
 
     private static final Text TITLE = new TranslatableText("container." + Main.MOD_ID + ".backpack");
-//    public SimpleInventory inventory = new SimpleInventory(27);
 
     public BackpackItem() {
         super(
                 ArmorMaterials.LEATHER,
                 EquipmentSlot.CHEST,
-                new Item.Settings().group(ItemGroup.COMBAT)
+                new Item.Settings().group(ItemGroup.COMBAT).maxDamage(-1)
         );
     }
 
+    //TODO don't update curse in tick because it is not perfect. Update it in ScreenHandlerMixin.
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
         if (world.isClient) {return;}
         if (!(entity instanceof PlayerEntity)) {return;}
-        if (!BackpackItem.isWearingIt((PlayerEntity) entity)) {return;}
-        if (!(((PlayerEntity) entity).currentScreenHandler instanceof BackpackScreenHandler)) {
-//            Main.LOGGER.warn("Something is wrong...");
-            return;
-        }
+        if (!BackpackItem.isWearingIt((PlayerEntity) entity, stack)) {return;}
+        if (!(((PlayerEntity) entity).currentScreenHandler instanceof BackpackScreenHandler)) {return;}
+        if(!((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).dirtyBackpack){return;}
+        ((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).dirtyBackpack = false;
 
+        BackpackItem.updateCurse(stack, (PlayerEntity) entity);
+    }
 
-
-        boolean hasItems = !((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).getBackpackInventory().isEmpty();
+    public static void updateCurse(ItemStack stack, PlayerEntity entity){
+        boolean hasItems = !((BackpackScreenHandler) entity.currentScreenHandler).getBackpackInventory().isEmpty();
         Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
         boolean changedEnchants = false;
         boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
@@ -86,6 +81,7 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     @Override
     public boolean isEnchantable(ItemStack itemstack) {return false;}
 
+
     //Screen
 
     @Nullable
@@ -104,14 +100,18 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     }
 
     public static boolean isWearingIt(PlayerEntity player){
-        return player.getInventory().armor.get(2).getItem() instanceof BackpackItem;
+        return player.getInventory().armor.get(2).isOf(Main.BACKPACK);
+    }
+
+    public static boolean isWearingIt(PlayerEntity player, ItemStack itemStack){
+        return BackpackItem.isWearingIt(player) && player.getInventory().armor.get(2) == itemStack;
     }
 
     public static ItemStack getIt(PlayerEntity player){
         return player.getInventory().armor.get(2);
     }
 
-    //Trusts its caller and don't check if can open Backpack Handler
+    //Trusts its caller and don't check if you can open Backpack Handler
     public static void openBackpackHandler(boolean open, ServerPlayerEntity player){
         if(player.world.isClient()){
             Main.LOGGER.warn("Unauthorized use.");

@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
@@ -56,12 +57,17 @@ public class BackpackInventory extends SimpleInventory {
         super.onOpen(player);
         if(player.world.isClient()){return;}
 //        if(owner.getNbt().contains("Inventory")){
-        Main.LOGGER.warn(this);
+//        Main.LOGGER.warn(this);
+        if(!owner.isOf(Main.BACKPACK)){return;}
 
         Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
 //            this.readNbtList(owner.getNbt().getList("Inventory", 10));
 
-        Main.LOGGER.warn("LOAD" + this + owner.getNbt());
+//        Main.LOGGER.warn("LOAD" + this + owner.getNbt());
+    }
+
+    public void saveContent(){
+        Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
     }
 
     @Override
@@ -70,15 +76,16 @@ public class BackpackInventory extends SimpleInventory {
         if(player.world.isClient()){return;}
 //        Main.LOGGER.warn("CLOSE");
 //        owner.getNbt().put("Inventory", this.toNbtList());
+        if(!owner.isOf(Main.BACKPACK)){return;}
+//
+//        Main.LOGGER.warn("SAVE" + this + owner.getNbt());
+//
+//        Main.LOGGER.warn(player.currentScreenHandler.getCursorStack().toString());
+//        Main.LOGGER.warn(this.owner);
+//        Main.LOGGER.warn(this.tag);
+//        Main.LOGGER.warn(this.owner.getNbt());
 
-        Main.LOGGER.warn("SAVE" + this + owner.getNbt());
-
-        Main.LOGGER.warn(player.currentScreenHandler.getCursorStack().toString());
-        Main.LOGGER.warn(this.owner);
-        Main.LOGGER.warn(this.tag);
-        Main.LOGGER.warn(this.owner.getNbt());
-
-        Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+        this.saveContent();
 
     }
 }

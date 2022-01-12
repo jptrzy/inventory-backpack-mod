@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.client.screen.BackpackScreen;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.minecraft.client.MinecraftClient;
@@ -20,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,79 +31,55 @@ import java.util.List;
 @Mixin(ScreenHandler.class)
 public class ScreenHandlerMixin {
 
-//    @Shadow
-//    @Nullable
-//    private ScreenHandlerSyncHandler syncHandler;
-//
-//    private ItemStack cursorStack;
-//    private int revision;
-//
     protected ScreenHandler getThis(){
         return ((ScreenHandler) (Object) this);
     }
-//
-//    @Inject(at = @At("HEAD"), method = "updateSlotStacks", cancellable = true)
-//    private void updateSlotStacks(int revision, List<ItemStack> stacks, ItemStack cursorStack, CallbackInfo ci) {
-////        Main.LOGGER.warn(getThis() instanceof InventoryScreen);
-////        Main.LOGGER.warn(getThis() instanceof CraftingScreenHandler);
-////        Main.LOGGER.warn(getThis() instanceof PlayerScreenHandler);
-////        Main.LOGGER.warn(getThis() instanceof AbstractRecipeScreenHandler);
-////        Main.LOGGER.warn(getThis() instanceof BackpackScreenHandler);
-////        Main.LOGGER.warn(stacks.size());
-////        Main.LOGGER.warn(getThis().slots.size());
-////        Main.LOGGER.warn(syncHandler);
-////        Main.LOGGER.warn(syncHandler);
-////        Main.LOGGER.warn(((BackpackScreenHandler) getThis()).getCategory());
-////
-////        Main.LOGGER.warn(getThis().getType());
-////        for(int i = 0; i < stacks.size(); ++i) {
-////            if(i < getThis().slots.size()) {
-////                getThis().getSlot(i).setStack((ItemStack) stacks.get(i));
-////            }
-////        }
-////
-////        cursorStack = cursorStack;
-////        revision = revision;
-////        ci.cancel();
-//    }
+
+    //It works!!!
+//    @Unique
+    public boolean open_inventory = false;
+
+    //Save Backpack Inventory
+    //TODO if problem with backpack curse, then you can update it here.
+    //TODO | or just check on pickup if not empty inventory and fast apply curse
+    @Inject(at = @At("HEAD"), method = "onSlotClick", cancellable = true)
+    private void HEAD_onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
+        if(player.world.isClient()){return;}
+//        if(slotIndex == -999){return;}
+        if(slotIndex<0 || slotIndex>=getThis().slots.size()){return;}
+        if(!(BackpackItem.isWearingIt(player, getThis().getSlot(slotIndex).getStack()))){return;}
+
+        if(!(getThis() instanceof BackpackScreenHandler)){return;}
+        open_inventory = true;
 
 
-//    @Inject(at = @At("HEAD"), method = "setStackInSlot", cancellable = true)
-//    public void setStackInSlot(int slot, int revision, ItemStack stack,  CallbackInfo ci) {
-//        Main.LOGGER.warn(slot);
-//    }
+        BackpackItem.updateCurse(getThis().getSlot(slotIndex).getStack(), player);
 
-//    @Environment(EnvType.SERVER)
+        ((BackpackScreenHandler) getThis()).getBackpackInventory().saveContent();
+    }
+
     @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
     private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if(player.world.isClient()){return;}
-
         if(!(getThis() instanceof PlayerScreenHandler)){return;}
-
         if(slotIndex<0 || slotIndex>=getThis().slots.size()){
-            if(!(slotIndex == -999 && (BackpackItem.isWearingIt(player) || getThis().getCursorStack().getItem() instanceof BackpackItem))){
-                Main.LOGGER.warn("SlotIndex out of range: " + slotIndex);
-                return;
+            if(slotIndex == -999 && BackpackItem.isWearingIt(player) && !(getThis() instanceof BackpackScreenHandler)){
+                BackpackItem.openBackpackHandler(true, (ServerPlayerEntity) player);
             }
-        }else if(getThis().getSlot(slotIndex).getIndex() != 38){return;}
-
-
-        if(BackpackItem.isWearingIt(player) || getThis() instanceof BackpackScreenHandler){
-            BackpackItem.openBackpackHandler(BackpackItem.isWearingIt(player), (ServerPlayerEntity) player);
-        }else{
-            Main.LOGGER.warn("don't work");
+            return;
         }
 
+        if(open_inventory && !((BackpackScreenHandler)getThis()).getBackpackInventory().isEmpty()){
+            return;
+        }
 
+        if(open_inventory || BackpackItem.isWearingIt(player, getThis().getSlot(slotIndex).getStack())){
+            BackpackItem.openBackpackHandler(!open_inventory, (ServerPlayerEntity) player);
+            open_inventory = false; // Shouldn't be necessary
+        }
 
-
-
-//        Main.LOGGER.warn(player.world.isClient());
-//        Main.LOGGER.warn(slotIndex);
-//        Main.LOGGER.warn(getThis().getSlot(slotIndex).getStack());
-//        Main.LOGGER.warn(getThis().getSlot(slotIndex).getIndex());
-//        Main.LOGGER.warn(actionType);
+        if(getThis() instanceof BackpackScreenHandler){
+            ((BackpackScreenHandler) getThis()).dirtyBackpack = true;
+        }
     }
-
-
 }
