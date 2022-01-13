@@ -1,7 +1,7 @@
 # Inventory Backpack Mod
 [![Fabric API](https://raw.githubusercontent.com/jptrzy/infusion-table-mod/1.17.1/Images/fabric-api-badge-lanczos.webp)](https://minecraft.curseforge.com/projects/fabric-api)
 
-[![Example Video](https://img.youtube.com/vi/1MATyNk05U4/0.jpg) &lt;-- Video](https://www.youtube.com/watch?v=1MATyNk05U4)
+[![Example Video](https://img.youtube.com/vi/Z4iCRSiph9I/0.jpg) &lt;-- Video](https://www.youtube.com/watch?v=Z4iCRSiph9I)
 
 ## About
 This mod adds backpack that can be access from inventory.
