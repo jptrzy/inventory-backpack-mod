@@ -11,8 +11,8 @@ It's based on forge mod [Quark Oddities](https://www.curseforge.com/minecraft/mc
 
 <details>
     <summary>Images</summary>
-    ![Fabric API](https://raw.githubusercontent.com/jptrzy/inventory-backpack-mod/1.18.1/images/2022-01-13_14.50.32.png)
-    ![Fabric API](https://raw.githubusercontent.com/jptrzy/inventory-backpack-mod/1.18.1/images/2022-01-13_14.51.01.png)
+![Fabric API](https://raw.githubusercontent.com/jptrzy/inventory-backpack-mod/1.18.1/images/2022-01-13_14.50.32.png)
+![Fabric API](https://raw.githubusercontent.com/jptrzy/inventory-backpack-mod/1.18.1/images/2022-01-13_14.51.01.png)
 </details>
 
 ## Downloads:
