@@ -55,7 +55,6 @@ public class BackpackInventory extends SimpleInventory {
     //TODO After death its save after some time you could yous it
     public void saveContent(){
         if(!BackpackItem.isLock(owner)){
-//            Main.LOGGER.warn("SAVE");
             Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
         }else{
             //TODO After death its save after some time (and after pressing restart`    ) you could yous it
