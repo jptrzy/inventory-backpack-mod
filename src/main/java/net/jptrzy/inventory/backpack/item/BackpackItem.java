@@ -118,7 +118,7 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     }
 
     public static boolean isLock(ItemStack itemStack){
-        return itemStack.getNbt().contains("Lock") && itemStack.getNbt().getBoolean("Lock");
+        return itemStack.hasNbt() && itemStack.getNbt().contains("Lock") && itemStack.getNbt().getBoolean("Lock");
     }
 
     public static boolean isWearingIt(PlayerEntity player){

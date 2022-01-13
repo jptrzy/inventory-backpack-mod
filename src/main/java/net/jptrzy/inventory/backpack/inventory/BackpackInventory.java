@@ -45,6 +45,7 @@ public class BackpackInventory extends SimpleInventory {
         super.onOpen(player);
         if(player.world.isClient()){return;}
         if(!owner.isOf(Main.BACKPACK)){return;}
+        if(!owner.hasNbt()){return;}
 
         BackpackItem.lock(owner, false);
 
