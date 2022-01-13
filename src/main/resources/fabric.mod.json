@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Inventory Backpack",
-  "description": "Adds backpack that can be access from inventory.",
+  "description": "Adds backpacks that can be accessed from inventory.",
   "authors": [
     "jptrzy"
   ],
