@@ -4,6 +4,8 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.mixin.ScreenHandlerAccessor;
 import net.jptrzy.inventory.backpack.mixin.SlotAccessor;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -61,6 +63,59 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
 
     public BackpackInventory getBackpackInventory(){
         return this.backpackInventory;
+    }
+
+    @Override
+    public ItemStack transferSlot(PlayerEntity player, int index) {
+//        final int craftingResult = 0;
+//        final int craftingStart = 1;
+//        final int armorStart = 5;
+        final int inventoryStart = 9;
+        final int hotbarStart = 36;
+        final int offHand = 45;
+        final int backpackStart = 46;
+        final int backpackEnd = 72;
+
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = (Slot)this.slots.get(index);
+        if (slot != null && slot.hasStack()) {
+            ItemStack itemStack2 = slot.getStack();
+            itemStack = itemStack2.copy();
+            EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
+                int i = 8 - equipmentSlot.getEntitySlotId();
+                if (!this.insertItem(itemStack2, i, i + 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slots.get(offHand)).hasStack()) {
+                if (!this.insertItem(itemStack2, offHand, backpackStart, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (index >= inventoryStart && index < hotbarStart) {
+                if (!this.insertItem(itemStack2, backpackStart, backpackEnd+1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (index >= backpackStart && index < backpackEnd+1) {
+                if (!this.insertItem(itemStack2, inventoryStart, hotbarStart, false)) {
+                    return ItemStack.EMPTY;
+                }
+            }else{
+                return super.transferSlot(player, index);
+            }
+
+            if (itemStack2.isEmpty()) {
+                slot.setStack(ItemStack.EMPTY);
+            } else {
+                slot.markDirty();
+            }
+
+            if (itemStack2.getCount() == itemStack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTakeItem(player, itemStack2);
+        }
+        return itemStack;
     }
 
     @Override
