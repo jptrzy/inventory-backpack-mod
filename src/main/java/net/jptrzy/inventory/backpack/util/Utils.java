@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.minecraft.enchantment.Enchantment;
@@ -172,4 +173,23 @@ public class Utils {
         player.currentScreenHandler.updateToClient();
     }
 
+    public static void onBackpackDrop(PlayerEntity player, ItemStack itemStack){
+        if (!itemStack.isOf(Main.BACKPACK)) { return; }
+
+        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(itemStack);
+        boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
+
+        if (!isCursed) { return; }
+
+        BackpackInventory inv = new BackpackInventory(itemStack);
+
+        inv.onOpen(player);
+        inv.dropAll(player);
+        inv.onClose(player);
+
+        enchants.remove(Enchantments.BINDING_CURSE);
+        EnchantmentHelper.set(enchants, itemStack);
+
+        Utils.setItemStackLock(itemStack, true);
+    }
 }

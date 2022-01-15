@@ -30,26 +30,8 @@ public class PlayerEntityMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", cancellable = true)
-    private void dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
-        if (!stack.isOf(Main.BACKPACK)) { return; }
-
-        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
-        boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
-
-        Main.LOGGER.warn("DROP ALL {} {} {}", isCursed, stack, stack.getNbt());
-
-        if (!isCursed) { return; }
-
-        BackpackInventory inv = new BackpackInventory(stack);
-
-        inv.onOpen(getThis());
-        inv.dropAll(getThis());
-        inv.onClose(getThis());
-
-        enchants.remove(Enchantments.BINDING_CURSE);
-        EnchantmentHelper.set(enchants, stack);
-
-        Utils.setItemStackLock(stack, true);
+    private void dropItem(ItemStack itemStack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
+        Utils.onBackpackDrop(getThis(), itemStack);
     }
 
     @Inject(at = @At("HEAD"), method = "dropInventory", cancellable = true)

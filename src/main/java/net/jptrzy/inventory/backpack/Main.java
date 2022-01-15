@@ -1,12 +1,19 @@
 package net.jptrzy.inventory.backpack;
 
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketEnums;
+import dev.emi.trinkets.api.event.TrinketDropCallback;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -31,8 +38,18 @@ public class Main implements ModInitializer {
 
 		Registry.register(Registry.ITEM, id("backpack"), BACKPACK);
 
+		registerEventsListiners();
 		registerPacketHandlers();
+	}
 
+	private void registerEventsListiners() {
+		if(Utils.isTrinketsLoaded()){
+			TrinketDropCallback.EVENT.register((TrinketEnums.DropRule rule, ItemStack itemStack, SlotReference ref, LivingEntity entity)->{
+				if(!(entity instanceof PlayerEntity)){return rule;}
+				Utils.onBackpackDrop((PlayerEntity) entity, itemStack);
+				return rule;
+			});
+		}
 	}
 
 	private void registerPacketHandlers() {
