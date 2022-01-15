@@ -19,6 +19,9 @@ It's based on forge mod [Quark Oddities](https://www.curseforge.com/minecraft/mc
 
 </details>
 
+### Mod Integrations
+* [Trinkets](https://www.curseforge.com/minecraft/mc-mods/trinkets-fabric)
+
 ## Downloads:
 * [Github](https://github.com/jptrzy/inventory-backpack-mod/releases)
 * [Modrinth](https://modrinth.com/mod/inventory-backpack-mod/versions)
