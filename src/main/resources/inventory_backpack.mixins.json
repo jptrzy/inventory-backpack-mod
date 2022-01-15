@@ -9,11 +9,14 @@
     "ScreenHandlerAccessor",
     "SimpleInventoryAccessor",
     "ScreenAccessor",
+    "MouseAccessor",
     "ScreenHandlerMixin",
     "MinecraftClientMixin",
     "PlayerEntityMixin",
     "CauldronBehaviorMixin",
-    "PlayerInventoryMixin"
+    "PlayerInventoryMixin",
+    "ClientNetworkingMixin",
+    "ServerPlayerEntityMixin"
   ],
   "client": [
   ],

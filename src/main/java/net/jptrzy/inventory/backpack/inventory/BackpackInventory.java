@@ -52,15 +52,21 @@ public class BackpackInventory extends SimpleInventory {
         if(!owner.isOf(Main.BACKPACK)){return;}
         if(!owner.hasNbt()){return;}
 
+        Main.LOGGER.warn("{} {}", this, owner.getNbt());
         Utils.setItemStackLock(owner, false);
 
         Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+        Main.LOGGER.warn("{} {}", this, owner.getNbt());
+
     }
 
     //TODO After death its save after some time you could yous it
     public void saveContent(){
+        Main.LOGGER.warn("TRY SAVE");
         if(!Utils.isItemStackLock(owner)){
-            Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
+            owner.setNbt(Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks()));
+            Main.LOGGER.warn("SAVE {} {} {}", owner, this, owner.getNbt());
+            this.markDirty();
         }else{
             //TODO After death its save after some time (and after pressing restart`    ) you could yous it
 //            Main.LOGGER.warn("TRY SAVING {}", this);

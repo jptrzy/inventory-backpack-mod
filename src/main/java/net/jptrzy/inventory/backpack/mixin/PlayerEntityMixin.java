@@ -36,6 +36,8 @@ public class PlayerEntityMixin {
         Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
         boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
 
+        Main.LOGGER.warn("DROP ALL {} {} {}", isCursed, stack, stack.getNbt());
+
         if (!isCursed) { return; }
 
         BackpackInventory inv = new BackpackInventory(stack);

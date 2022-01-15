@@ -22,6 +22,7 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
 
     private BackpackInventory backpackInventory;
     public boolean dirtyBackpack = true;
+    private final int backpackStart;
 
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory.player);
@@ -51,6 +52,8 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         int left = anchor.x;
         int top = anchor.y - 58;
 
+        backpackStart = slots.size();
+
         ItemStack backpack = Utils.getBackpack(player);
         backpackInventory = new BackpackInventory(backpack);
         backpackInventory.onOpen(player);
@@ -77,8 +80,10 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         final int inventoryStart = 9;
         final int hotbarStart = 36;
         final int offHand = 45;
-        int backpackStart = 46;
-        final int backpackEnd = backpackStart+27;
+        final int backpackEnd = backpackStart+26;
+
+        Main.LOGGER.warn("{} {} {}", backpackStart, backpackEnd, slots.size());
+
 
 
         ItemStack itemStack = ItemStack.EMPTY;
