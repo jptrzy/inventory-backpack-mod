@@ -4,6 +4,7 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.mixin.ScreenHandlerAccessor;
 import net.jptrzy.inventory.backpack.mixin.SlotAccessor;
+import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -49,7 +50,7 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         int top = anchor.y - 58;
 
 //        ItemStack backpack = player.getMainHandStack();
-        ItemStack backpack = player.getInventory().armor.get(2);
+        ItemStack backpack = Utils.getBackpack(player);
 //        backpack.setCustomName(new LiteralText("OPEN"));
 //        SimpleInventory inv = ((BackpackItem) backpack.getItem()).inventory;
         backpackInventory = new BackpackInventory(backpack);

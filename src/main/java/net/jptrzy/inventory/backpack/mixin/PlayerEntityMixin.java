@@ -4,6 +4,7 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
+import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -46,12 +47,12 @@ public class PlayerEntityMixin {
         enchants.remove(Enchantments.BINDING_CURSE);
         EnchantmentHelper.set(enchants, stack);
 
-        BackpackItem.lock(stack, true);
+        Utils.setItemStackLock(stack, true);
     }
 
     @Inject(at = @At("HEAD"), method = "dropInventory", cancellable = true)
     private void dropInventory(CallbackInfo ci) {
-        if(!(getThis().currentScreenHandler instanceof BackpackScreenHandler && BackpackItem.isWearingIt(getThis()))){ return; }
+        if(!(getThis().currentScreenHandler instanceof BackpackScreenHandler && Utils.hasBackpack(getThis()))){ return; }
 
         ((BackpackScreenHandler) getThis().currentScreenHandler).getBackpackInventory().saveContent();
     }

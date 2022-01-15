@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.client.screen.BackpackScreen;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
+import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -25,7 +26,7 @@ public class MinecraftClientMixin {
 
     @Inject(at = @At("HEAD"), method = "setScreen", cancellable = true)
     private void setScreen(@Nullable Screen screen, CallbackInfo ci){
-        if(screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && BackpackItem.isWearingIt(getThis().player)){
+        if(screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && Utils.hasBackpack(getThis().player)){
             ClientPlayNetworking.send(Main.id("open_backpack"), new PacketByteBuf(Unpooled.buffer()));
             ci.cancel();
         }

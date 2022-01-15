@@ -3,6 +3,7 @@ package net.jptrzy.inventory.backpack.inventory;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.SimpleInventoryAccessor;
+import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
@@ -47,14 +48,14 @@ public class BackpackInventory extends SimpleInventory {
         if(!owner.isOf(Main.BACKPACK)){return;}
         if(!owner.hasNbt()){return;}
 
-        BackpackItem.lock(owner, false);
+        Utils.setItemStackLock(owner, false);
 
         Inventories.readNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
     }
 
     //TODO After death its save after some time you could yous it
     public void saveContent(){
-        if(!BackpackItem.isLock(owner)){
+        if(!Utils.isItemStackLock(owner)){
             Inventories.writeNbt(owner.getNbt(), ((SimpleInventoryAccessor) this).getStacks());
         }else{
             //TODO After death its save after some time (and after pressing restart`    ) you could yous it

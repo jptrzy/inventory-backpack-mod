@@ -7,6 +7,7 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.HandledScreenAccessor;
 import net.jptrzy.inventory.backpack.mixin.ScreenAccessor;
+import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -37,7 +38,7 @@ public class BackpackScreen extends InventoryScreen {
     }
 
     public void checkColor(){
-        setColor(MinecraftClient.getInstance().player.getInventory().armor.get(2));
+        setColor(Utils.getBackpack(MinecraftClient.getInstance().player));
     }
 
     protected void setColor(ItemStack stack){
