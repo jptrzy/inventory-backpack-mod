@@ -22,6 +22,10 @@ public class BackpackInventory extends SimpleInventory {
         this.owner = owner;
     }
 
+    public ItemStack getOwner() {
+        return owner;
+    }
+
     public int moveSlot(int slot){
         return (slot>=0 && slot<this.size()) ? slot : slot + slotMove;
     }

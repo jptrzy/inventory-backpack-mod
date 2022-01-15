@@ -46,9 +46,9 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
 
         if (world.isClient) {return;}
         if (!(entity instanceof PlayerEntity)) {return;}
-        if (!Utils.hasBackpack((PlayerEntity) entity, stack)) {return;}
         if (!(((PlayerEntity) entity).currentScreenHandler instanceof BackpackScreenHandler)) {return;}
         if(!((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).dirtyBackpack){return;}
+        if (!Utils.hasBackpack((PlayerEntity) entity, stack)) {return;}
         ((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).dirtyBackpack = false;
 
         BackpackItem.updateCurse(stack, (PlayerEntity) entity);

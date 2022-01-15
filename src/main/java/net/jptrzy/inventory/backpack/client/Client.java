@@ -7,12 +7,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.client.renderer.BackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.client.screen.BackpackScreen;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -37,7 +39,15 @@ public class Client implements ClientModInitializer {
 
         ArmorRenderer.register(new BackpackArmorRenderer(), Main.BACKPACK);
 
+//        registerEventsListiners();
         registerPacketHandlers();
+    }
+
+    private void registerEventsListiners() {
+        ClientTickCallback.EVENT.register((MinecraftClient client) ->
+        {
+            Main.LOGGER.warn(client);
+        });
     }
 
     private void registerPacketHandlers() {

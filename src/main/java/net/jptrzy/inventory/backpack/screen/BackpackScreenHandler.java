@@ -49,10 +49,7 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         int left = anchor.x;
         int top = anchor.y - 58;
 
-//        ItemStack backpack = player.getMainHandStack();
         ItemStack backpack = Utils.getBackpack(player);
-//        backpack.setCustomName(new LiteralText("OPEN"));
-//        SimpleInventory inv = ((BackpackItem) backpack.getItem()).inventory;
         backpackInventory = new BackpackInventory(backpack);
         backpackInventory.onOpen(player);
         for(int i = 0; i < 3; ++i)

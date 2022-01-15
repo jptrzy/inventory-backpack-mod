@@ -38,6 +38,10 @@ public class BackpackScreen extends InventoryScreen {
     }
 
     public void checkColor(){
+        if(Utils.getBackpack(MinecraftClient.getInstance().player) == null){
+            Main.LOGGER.warn("error");
+            return;
+        }
         setColor(Utils.getBackpack(MinecraftClient.getInstance().player));
     }
 
