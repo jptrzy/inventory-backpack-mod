@@ -27,6 +27,8 @@ public class BackpackScreen extends InventoryScreen {
     public static final Identifier BACKGROUND_TEXTURE = Main.id("textures/gui/backpack_inventory.png");
     public static final Identifier BACKGROUND_TEXTURE_OVERLAY = Main.id("textures/gui/backpack_inventory_overlay.png");
 
+    private boolean color = false;
+
     private float r = 1;
     private float g = 1;
     private float b = 1;
@@ -37,12 +39,21 @@ public class BackpackScreen extends InventoryScreen {
         checkColor();
     }
 
+    public void handledScreenTick() {
+        super.handledScreenTick();
+        if(!color){
+            checkColor();
+        }
+    }
+
     public void checkColor(){
-        if(Utils.getBackpack(MinecraftClient.getInstance().player) == null){
+        ItemStack itemStack = Utils.getBackpack(MinecraftClient.getInstance().player);
+        if(itemStack == null){
+            color = false;
             Main.LOGGER.warn("error");
             return;
         }
-        setColor(Utils.getBackpack(MinecraftClient.getInstance().player));
+        setColor(itemStack);
     }
 
     protected void setColor(ItemStack stack){
@@ -52,6 +63,12 @@ public class BackpackScreen extends InventoryScreen {
         r = (float)(i >> 16 & 255) / 255.0F;
         g = (float)(i >> 8 & 255) / 255.0F;
         b = (float)(i & 255) / 255.0F;
+    }
+
+    @Override
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        super.drawForeground(matrices, mouseX, mouseY);
+        moveRecipeButton();
     }
 
     @Override

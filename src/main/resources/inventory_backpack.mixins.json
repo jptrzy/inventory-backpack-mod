@@ -12,7 +12,8 @@
     "ScreenHandlerMixin",
     "MinecraftClientMixin",
     "PlayerEntityMixin",
-    "CauldronBehaviorMixin"
+    "CauldronBehaviorMixin",
+    "PlayerInventoryMixin"
   ],
   "client": [
   ],

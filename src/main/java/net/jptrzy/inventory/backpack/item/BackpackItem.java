@@ -1,6 +1,9 @@
 package net.jptrzy.inventory.backpack.item;
 
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.Trinket;
 import io.netty.buffer.Unpooled;
+import jdk.jshell.execution.Util;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.jptrzy.inventory.backpack.Main;
@@ -39,19 +42,23 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
         );
     }
 
-    //TODO don't update curse in tick because it is not perfect. Update it in ScreenHandlerMixin.
+
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (world.isClient) {return;}
         if (!(entity instanceof PlayerEntity)) {return;}
-        if (!(((PlayerEntity) entity).currentScreenHandler instanceof BackpackScreenHandler)) {return;}
-        if(!((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).dirtyBackpack){return;}
-        if (!Utils.hasBackpack((PlayerEntity) entity, stack)) {return;}
-        ((BackpackScreenHandler) ((PlayerEntity) entity).currentScreenHandler).dirtyBackpack = false;
+        tick(stack, (PlayerEntity) entity);
+    }
 
-        BackpackItem.updateCurse(stack, (PlayerEntity) entity);
+    //TODO don't update curse in tick because it is not perfect. Update it in ScreenHandlerMixin.
+    public void tick(ItemStack stack, PlayerEntity entity) {
+        if (entity.world.isClient) {return;}
+        if (!(entity.currentScreenHandler instanceof BackpackScreenHandler)) {return;}
+        if(!((BackpackScreenHandler) entity.currentScreenHandler).dirtyBackpack){return;}
+        if (!Utils.hasBackpack(entity, stack)) {return;}
+        ((BackpackScreenHandler) entity.currentScreenHandler).dirtyBackpack = false;
+
+        Utils.updateBackpackCurse(stack, entity);
     }
 
     public static void updateCurse(ItemStack stack, PlayerEntity entity){

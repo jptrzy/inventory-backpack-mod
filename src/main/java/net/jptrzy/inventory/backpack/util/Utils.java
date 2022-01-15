@@ -8,6 +8,11 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
+import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,6 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 
 import java.util.List;
+import java.util.Map;
 
 public class Utils {
 
@@ -71,6 +77,55 @@ public class Utils {
         return null;
     }
 
+    public static void updateBackpackCurse(ItemStack itemStack, PlayerEntity player){
+        if(!itemStack.isOf(Main.BACKPACK)){return;}
+
+        boolean hasItems = true;
+        if(player.currentScreenHandler instanceof BackpackScreenHandler &&
+                ((BackpackScreenHandler) player.currentScreenHandler).getBackpackInventory().getOwner() == itemStack
+        ){
+            hasItems = !((BackpackScreenHandler) player.currentScreenHandler).getBackpackInventory().isEmpty();
+        }else{
+            hasItems = false;
+            if(itemStack.getOrCreateNbt().contains("Items")){
+                hasItems = !itemStack.getNbt().getList("Items", 10).isEmpty();
+            }
+        }
+
+
+        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(itemStack);
+        boolean changedEnchants = false;
+        boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
+
+        if(hasItems){
+            if(!isCursed) {
+                enchants.put(Enchantments.BINDING_CURSE, 1);
+                changedEnchants = true;
+            }
+        }else{
+            if(isCursed) {
+                enchants.remove(Enchantments.BINDING_CURSE);
+                changedEnchants = true;
+            }
+        }
+
+        if(changedEnchants){
+            EnchantmentHelper.set(enchants, itemStack);
+        }
+    }
+
+    public static void tickBackpackInTrinket(PlayerEntity player){
+        if(Utils.isTrinketsLoaded()){
+            TrinketsApi.getTrinketComponent(player).ifPresent(trinkets ->
+                trinkets.forEach((slotReference, itemStack) -> {
+                        if(itemStack.isOf(Main.BACKPACK)){
+                            ((BackpackItem) itemStack.getItem()).tick(itemStack, player);
+                        }
+                    }
+                ));
+        }
+    }
+
     //Literally dropInventory from ScreenHandler with CraftingInput
     public static void dropCraftingInventory(PlayerEntity player) {
         PlayerScreenHandler sh = ((PlayerScreenHandler) player.currentScreenHandler);
@@ -110,28 +165,11 @@ public class Utils {
             player.currentScreenHandler = player.playerScreenHandler;
         }
 
-//        oplayer.currentScreenHandler == player.playerScreenHandler
-
-//        if(BackpackItem.isWearingIt(player)){
-//            if(open) {
-//                player.openHandledScreen((BackpackItem) BackpackItem.getIt(player).getItem());
-//            }else{
-//                ServerPlayNetworking.send(player, Main.id("reload_screen"), new PacketByteBuf(Unpooled.buffer()));
-//            }
-//        }else if(!open && player.currentScreenHandler instanceof BackpackScreenHandler && !BackpackItem.isWearingIt(player)){
-//            ServerPlayNetworking.send(player, Main.id("open_inventory"), new PacketByteBuf(Unpooled.buffer()));
-//            player.currentScreenHandler.close(player);
-//            player.currentScreenHandler = player.playerScreenHandler;
-//        }else{
-//            Main.LOGGER.warn("Unexpected situation");
-//        }
-
         if(Utils.isTrinketsLoaded())
             ((TrinketPlayerScreenHandler) player.playerScreenHandler).updateTrinketSlots(false);
 
         player.currentScreenHandler.setCursorStack(cursorStack);
         player.currentScreenHandler.updateToClient();
-//        player.currentScreenHandler.sendContentUpdates();
     }
 
 }

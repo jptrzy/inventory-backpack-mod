@@ -1,5 +1,6 @@
 package net.jptrzy.inventory.backpack.screen;
 
+import dev.emi.trinkets.TrinketPlayerScreenHandler;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.mixin.ScreenHandlerAccessor;
@@ -45,6 +46,7 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
                 ((SlotAccessor) slot).setY(((SlotAccessor) slot).getY() + 58);
             }
         }
+
         Slot anchor = slots.get(9);
         int left = anchor.x;
         int top = anchor.y - 58;
@@ -57,6 +59,10 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
                 int k = j + i * 9 + 36;
                 addSlot(new Slot(backpackInventory, k, left + j * 18, top + i * 18));
             }
+
+//        if(Utils.isTrinketsLoaded())
+//            ((TrinketPlayerScreenHandler) player.playerScreenHandler).updateTrinketSlots(true);
+//        Main.LOGGER.warn(slots.size());
     }
 
     public BackpackInventory getBackpackInventory(){
@@ -71,8 +77,9 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         final int inventoryStart = 9;
         final int hotbarStart = 36;
         final int offHand = 45;
-        final int backpackStart = 46;
-        final int backpackEnd = 72;
+        int backpackStart = 46;
+        final int backpackEnd = backpackStart+27;
+
 
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);

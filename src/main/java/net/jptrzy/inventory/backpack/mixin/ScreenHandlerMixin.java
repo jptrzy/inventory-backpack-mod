@@ -42,52 +42,30 @@ public class ScreenHandlerMixin {
     @Inject(at = @At("HEAD"), method = "onSlotClick", cancellable = true)
     private void HEAD_onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if(player.world.isClient()){return;}
-        if(slotIndex<0 || slotIndex>=getThis().slots.size()){return;}
+        if((slotIndex<0 || slotIndex>=getThis().slots.size()) && slotIndex != -999){return;}
         if(!(getThis() instanceof PlayerScreenHandler)){return;}
 
         hadBackpack = getThis() instanceof BackpackScreenHandler;
-        if(hadBackpack) {
+        if(hadBackpack && slotIndex != -999) {
             ItemStack itemStack = getThis().slots.get(slotIndex).getStack();
             takingOfBackpack = Utils.hasBackpack(player, itemStack);
             if (takingOfBackpack) {
-                BackpackItem.updateCurse(itemStack, player);
+                Utils.updateBackpackCurse(itemStack, player);
                 ((BackpackScreenHandler) getThis()).getBackpackInventory().saveContent();
             }
         }
-        Main.LOGGER.warn("HEAD {} {}", hadBackpack, takingOfBackpack);
-//          OLD
-//        if(player.world.isClient()){return;}
-//        if(slotIndex<0 || slotIndex>=getThis().slots.size()){return;}
-//        if(!(BackpackItem.isWearingIt(player, getThis().getSlot(slotIndex).getStack()) && getThis() instanceof BackpackScreenHandler )){
-//            //Check if try_open_backpack for fastMove
-//            if(!(getThis() instanceof BackpackScreenHandler) && getThis() instanceof PlayerScreenHandler && getThis().getSlot(slotIndex).getStack().isOf(Main.BACKPACK)){
-//                try_open_backpack = true;
-//                return;
-//            }
-//            return;
-//        }
-//
-//        try_open_inventory = true;
-//
-//        BackpackItem.updateCurse(getThis().getSlot(slotIndex).getStack(), player);
-//
-//        ((BackpackScreenHandler) getThis()).getBackpackInventory().saveContent();
     }
 
     @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
     private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if(player.world.isClient()){return;}
-        if(slotIndex<0 || slotIndex>=getThis().slots.size()){return;}
+        if((slotIndex<0 || slotIndex>=getThis().slots.size()) && slotIndex != -999){return;}
         if(!(getThis() instanceof PlayerScreenHandler)){return;}
 
         if(hadBackpack){
             if(Utils.hasBackpack(player)){
-                Main.LOGGER.warn("TEST");
                 if (!Utils.hasBackpack(player, getThisAsBackPack().getBackpackInventory().getOwner())) {
-                    Main.LOGGER.warn("TEST2");
                     Utils.openBackpackHandler(true, (ServerPlayerEntity) player);
-                }else{
-                    Main.LOGGER.warn("WTF");
                 }
             }else{
                 Utils.openBackpackHandler(false, (ServerPlayerEntity) player);
@@ -101,41 +79,5 @@ public class ScreenHandlerMixin {
 
         if(getThis() instanceof BackpackScreenHandler)
             ((BackpackScreenHandler) getThis()).dirtyBackpack = true;
-
-
-
-
-
-//        Main.LOGGER.warn("TAIL {} {}", getThis().getSlot(slotIndex).getIndex(), getThis().getSlot(slotIndex).getStack());
-//        ClientPlayNetworking.send(Main.id("open_backpack"), new PacketByteBuf(Unpooled.buffer()));
-//          OLD
-//        if(player.world.isClient()){return;}
-//        if(!(getThis() instanceof PlayerScreenHandler)){return;}
-//        if(slotIndex<0 || slotIndex>=getThis().slots.size()){
-//            if(slotIndex == -999 && BackpackItem.isWearingIt(player) && !(getThis() instanceof BackpackScreenHandler)){
-//                BackpackItem.openBackpackHandler(true, (ServerPlayerEntity) player);
-//            }
-//            return;
-//        }
-//
-//        if(try_open_backpack && BackpackItem.isWearingIt(player)){
-//            BackpackItem.openBackpackHandler(true, (ServerPlayerEntity) player);
-//            try_open_backpack = false; // Shouldn't be necessary
-//        }else {
-//
-//            if (try_open_inventory && !((BackpackScreenHandler) getThis()).getBackpackInventory().isEmpty()) {
-//                return;
-//            }
-//
-//            if (try_open_inventory || BackpackItem.isWearingIt(player, getThis().getSlot(slotIndex).getStack())) {
-//                BackpackItem.openBackpackHandler(!try_open_inventory, (ServerPlayerEntity) player);
-//                try_open_inventory = false; // Shouldn't be necessary
-//            }
-//
-//        }
-//
-//        if(getThis() instanceof BackpackScreenHandler){
-//            ((BackpackScreenHandler) getThis()).dirtyBackpack = true;
-//        }
     }
 }
