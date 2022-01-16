@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+* adds support for cloth-config2, modmenu
+* adds options screen/json
+* adds option to disable backpack trinket even when installed
+
 ## 0.2.0
 * adds support for trinkets 
 * optimize core events code (run better)

@@ -1,24 +1,26 @@
 package net.jptrzy.inventory.backpack;
 
 import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.SlotType;
 import dev.emi.trinkets.api.TrinketEnums;
+import dev.emi.trinkets.api.TrinketsApi;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
 import io.netty.buffer.Unpooled;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.jptrzy.inventory.backpack.config.AutoConfigManager;
+import net.jptrzy.inventory.backpack.config.ModConfigData;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -29,14 +31,19 @@ public class Main implements ModInitializer {
 	public static final String MOD_ID = "inventory_backpack";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
+
+	public static final Identifier BACKPACK_ID = id("backpack");
 	public static final Item BACKPACK = new BackpackItem();
 
 	public static final ScreenHandlerType<BackpackScreenHandler> BACKPACK_SCREEN_HANDLER;
 
 	@Override
 	public void onInitialize() {
+		if(Utils.isClothConfigLoaded()){
+			AutoConfigManager.setup();
+		}
 
-		Registry.register(Registry.ITEM, id("backpack"), BACKPACK);
+		Registry.register(Registry.ITEM, BACKPACK_ID, BACKPACK);
 
 		registerEventsListiners();
 		registerPacketHandlers();

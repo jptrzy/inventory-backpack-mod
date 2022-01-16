@@ -24,6 +24,9 @@
     ],
     "client": [
       "net.jptrzy.inventory.backpack.client.Client"
+    ],
+    "modmenu": [
+      "net.jptrzy.inventory.backpack.integrations.ModMenuConfig"
     ]
   },
   "mixins": [
@@ -36,5 +39,9 @@
     "minecraft": "1.18.x",
     "java": ">=17"
   },
-  "suggests": {}
+  "suggests": {
+    "trinkets": ">=3.1.0",
+    "cloth-config2": ">=6.1.50",
+    "modmenu": ">=3.0.1"
+  }
 }

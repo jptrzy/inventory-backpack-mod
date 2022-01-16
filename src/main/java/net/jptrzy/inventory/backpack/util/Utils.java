@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
@@ -32,6 +33,7 @@ public class Utils {
     public final static String NBT_LOCK_KEY = "Lock";
 
     public static final String TRINKETS_MOD_ID = "trinkets";
+    public static final String CLOTH_CONFIG_MOD_ID = "cloth-config2";
 
     public static void setItemStackLock(ItemStack itemStack, boolean lock){
         itemStack.getOrCreateNbt().putBoolean(NBT_LOCK_KEY, lock);
@@ -46,7 +48,10 @@ public class Utils {
     }
 
     public static boolean isTrinketsLoaded() {
-        return isModLoaded(TRINKETS_MOD_ID);
+        return ModConfig.trinkets && isModLoaded(TRINKETS_MOD_ID);
+    }
+    public static boolean isClothConfigLoaded() {
+        return isModLoaded(CLOTH_CONFIG_MOD_ID);
     }
 
     public static boolean hasTrinketsItem(PlayerEntity player, Item item) {

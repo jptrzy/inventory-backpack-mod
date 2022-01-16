@@ -1,3 +1,7 @@
 {
-  "item.inventory_backpack.backpack": "Backpack"
+  "item.inventory_backpack.backpack": "Backpack",
+
+  "text.autoconfig.inventory_backpack.title": "Inventory Backpack Options",
+
+  "text.autoconfig.inventory_backpack.option.trinkets": "Trinkets"
 }
