@@ -35,8 +35,8 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
     public BackpackScreenHandler(int syncId, PlayerEntity player) {
         super(player.getInventory(), !player.world.isClient(), player);
 
-
-        // Without this ScreenHandler thinks that it is PlayerScreenHandler and not BackpackScreenHandler from the client site. (I've worked on it for too long.)
+        // Without this ScreenHandler thinks that it is PlayerScreenHandler and not BackpackScreenHandler from the
+        // client site. (I've worked on it for too long.)
         ((ScreenHandlerAccessor) this).setSyncId(syncId);
 
         this.enableSyncing();
@@ -62,10 +62,6 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
                 int k = j + i * 9 + 36;
                 addSlot(new Slot(backpackInventory, k, left + j * 18, top + i * 18));
             }
-
-//        if(Utils.isTrinketsLoaded())
-//            ((TrinketPlayerScreenHandler) player.playerScreenHandler).updateTrinketSlots(true);
-//        Main.LOGGER.warn(slots.size());
     }
 
     public BackpackInventory getBackpackInventory(){
@@ -82,17 +78,14 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         final int offHand = 45;
         final int backpackEnd = backpackStart+26;
 
-        Main.LOGGER.warn("{} {} {}", backpackStart, backpackEnd, slots.size());
-
-
-
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
             EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
+            if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR
+                    && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
                 int i = 8 - equipmentSlot.getEntitySlotId();
                 if (!this.insertItem(itemStack2, i, i + 1, false)) {
                     return ItemStack.EMPTY;
