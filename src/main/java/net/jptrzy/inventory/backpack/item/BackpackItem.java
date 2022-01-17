@@ -51,7 +51,7 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     }
 
     //TODO don't update curse in tick because it is not perfect. Update it in ScreenHandlerMixin.
-    public void tick(ItemStack stack, PlayerEntity entity) {
+    public static void tick(ItemStack stack, PlayerEntity entity) {
         if (entity.world.isClient) {return;}
         if (!(entity.currentScreenHandler instanceof BackpackScreenHandler)) {return;}
         if(!((BackpackScreenHandler) entity.currentScreenHandler).dirtyBackpack){return;}
@@ -60,30 +60,6 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
 
         Utils.updateBackpackCurse(stack, entity);
     }
-
-    public static void updateCurse(ItemStack stack, PlayerEntity entity){
-        boolean hasItems = !((BackpackScreenHandler) entity.currentScreenHandler).getBackpackInventory().isEmpty();
-        Map<Enchantment, Integer> enchants = EnchantmentHelper.get(stack);
-        boolean changedEnchants = false;
-        boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
-
-        if(hasItems){
-            if(!isCursed) {
-                enchants.put(Enchantments.BINDING_CURSE, 1);
-                changedEnchants = true;
-            }
-        }else{
-            if(isCursed) {
-                enchants.remove(Enchantments.BINDING_CURSE);
-                changedEnchants = true;
-            }
-        }
-
-        if(changedEnchants){
-            EnchantmentHelper.set(enchants, stack);
-        }
-    }
-
     @Override
     public boolean hasGlint(ItemStack stack) {
         return false;
@@ -92,13 +68,7 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
     @Override
     public boolean isEnchantable(ItemStack itemstack) {return false;}
 
-//    @Override
-//    public void onItemEntityDestroyed(ItemEntity entity) {
-//        Main.LOGGER.warn("onItemEntityDestroyed");
-//    }
-
     //Screen
-
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {

@@ -1,9 +1,6 @@
 package net.jptrzy.inventory.backpack;
 
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.SlotType;
-import dev.emi.trinkets.api.TrinketEnums;
-import dev.emi.trinkets.api.TrinketsApi;
+import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
 import io.netty.buffer.Unpooled;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -14,6 +11,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.jptrzy.inventory.backpack.config.AutoConfigManager;
 import net.jptrzy.inventory.backpack.config.ModConfigData;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
+import net.jptrzy.inventory.backpack.item.BackpackTrinket;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.entity.LivingEntity;
@@ -39,8 +37,13 @@ public class Main implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+
 		if(Utils.isClothConfigLoaded()){
 			AutoConfigManager.setup();
+		}
+
+		if(Utils.isModLoaded(Utils.TRINKETS_MOD_ID)){
+			BackpackTrinket.register();
 		}
 
 		Registry.register(Registry.ITEM, BACKPACK_ID, BACKPACK);
