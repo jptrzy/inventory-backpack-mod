@@ -1,10 +1,11 @@
-package net.jptrzy.inventory.backpack.item;
+package net.jptrzy.inventory.backpack.integrations;
 
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.Trinket;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.config.ModConfig;
+import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
