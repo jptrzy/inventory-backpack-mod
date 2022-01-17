@@ -15,7 +15,8 @@
     "PlayerEntityMixin",
     "CauldronBehaviorMixin",
     "ClientNetworkingMixin",
-    "ServerPlayerEntityMixin"
+    "ServerPlayerEntityMixin",
+    "LivingEntityMixin"
   ],
   "client": [
   ],

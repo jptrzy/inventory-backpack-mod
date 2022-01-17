@@ -32,6 +32,8 @@ public class Main implements ModInitializer {
 
 	public static final ScreenHandlerType<BackpackScreenHandler> BACKPACK_SCREEN_HANDLER;
 
+	public static final Identifier NETWORK_BACKPACK_OPEN_ID = id("open_backpack");
+
 	@Override
 	public void onInitialize() {
 
@@ -60,7 +62,7 @@ public class Main implements ModInitializer {
 	}
 
 	private void registerPacketHandlers() {
-		ServerPlayNetworking.registerGlobalReceiver(Main.id("open_backpack"),
+		ServerPlayNetworking.registerGlobalReceiver(NETWORK_BACKPACK_OPEN_ID,
 				(server, player, networkHandler, buf, sender) -> {
 					server.execute(() -> {
 						if(player.currentScreenHandler == player.playerScreenHandler && Utils.hasBackpack(player)){

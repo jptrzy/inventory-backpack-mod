@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.inventory.backpack.Main;
+import net.jptrzy.inventory.backpack.client.Client;
 import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
@@ -166,7 +167,7 @@ public class Utils {
         if(open){
             player.openHandledScreen((BackpackItem) Utils.getBackpack(player).getItem());
         }else{
-            ServerPlayNetworking.send(player, Main.id("open_inventory"), new PacketByteBuf(Unpooled.buffer()));
+            ServerPlayNetworking.send(player, Client.NETWORK_OPEN_INVENTORY_ID, new PacketByteBuf(Unpooled.buffer()));
             player.currentScreenHandler.close(player);
             player.currentScreenHandler = player.playerScreenHandler;
         }
