@@ -1,11 +1,15 @@
 # Changelog
 
+## 0.2.2
+* adds ender backpack recipe
+
 ## 0.2.1
 * adds support for cloth-config2, modmenu
 * add options screen/json
 * adds option to disable backpack trinket even when installed
 * change how trinkets are updated
 * model renders when trinket (#6)
+* adds ender backpack
 * repair error(#5) with hotbar update; but with it change to not optimal method 
 
 ## 0.2.0
