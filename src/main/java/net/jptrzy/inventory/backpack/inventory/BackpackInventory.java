@@ -1,16 +1,12 @@
 package net.jptrzy.inventory.backpack.inventory;
 
 import net.jptrzy.inventory.backpack.Main;
-import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.SimpleInventoryAccessor;
 import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-
-import java.util.Iterator;
-import java.util.List;
 
 public class BackpackInventory extends SimpleInventory {
 
@@ -25,25 +21,6 @@ public class BackpackInventory extends SimpleInventory {
     public ItemStack getOwner() {
         return owner;
     }
-
-    public int moveSlot(int slot){
-        return (slot>=0 && slot<this.size()) ? slot : slot + slotMove;
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
-        return super.getStack(moveSlot(slot));
-    }
-    @Override
-    public ItemStack removeStack(int slot,  int amount) {
-        return super.removeStack(moveSlot(slot), amount);
-    }
-    @Override
-    public ItemStack removeStack(int slot) {
-        return super.removeStack(moveSlot(slot));
-    }
-    @Override
-    public void setStack(int slot, ItemStack stack) { super.setStack(moveSlot(slot), stack); }
 
     @Override
     public void onOpen(PlayerEntity player){

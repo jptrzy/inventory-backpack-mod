@@ -5,6 +5,7 @@
 * add options screen/json
 * adds option to disable backpack trinket even when installed
 * change how trinkets are updated
+* model renders as trinket
 
 ## 0.2.0
 * adds support for trinkets 

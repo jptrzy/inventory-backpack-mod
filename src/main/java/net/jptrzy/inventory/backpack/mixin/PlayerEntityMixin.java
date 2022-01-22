@@ -34,6 +34,6 @@ public class PlayerEntityMixin {
     private void dropInventory(CallbackInfo ci) {
         if(!(currentScreenHandler instanceof BackpackScreenHandler && Utils.hasBackpack(getThis()))){ return; }
 
-        ((BackpackScreenHandler) currentScreenHandler).getBackpackInventory().saveContent();
+        ((BackpackScreenHandler) currentScreenHandler).saveInventory();
     }
 }

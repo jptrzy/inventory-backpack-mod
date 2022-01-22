@@ -1,5 +1,8 @@
 package net.jptrzy.inventory.backpack.client;
 
+import com.sun.jna.platform.win32.LMAccess;
+import dev.emi.trinkets.api.client.TrinketRenderer;
+import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,8 +15,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.client.renderer.BackpackArmorRenderer;
+import net.jptrzy.inventory.backpack.client.renderer.EnderBackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.client.screen.BackpackScreen;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
+import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -26,6 +31,8 @@ public class Client implements ClientModInitializer {
 
     public static final Identifier NETWORK_OPEN_INVENTORY_ID = Main.id("open_inventory");
     public static final Identifier NETWORK_RELOAD_SCREEN_ID = Main.id("reload_screen");
+    public static final BackpackArmorRenderer BACKPACK_ARMOR_RENDERER = new BackpackArmorRenderer();
+    public static final EnderBackpackArmorRenderer ENDER_BACKPACK_ARMOR_RENDERER = new EnderBackpackArmorRenderer();
 
     @Override
     public void onInitializeClient() {
@@ -40,7 +47,8 @@ public class Client implements ClientModInitializer {
             return EnchantmentHelper.get(itemStack).containsKey(Enchantments.BINDING_CURSE) ? 1 : 0;
         });
 
-        ArmorRenderer.register(new BackpackArmorRenderer(), Main.BACKPACK);
+        ArmorRenderer.register(BACKPACK_ARMOR_RENDERER, Main.BACKPACK);
+        ArmorRenderer.register(ENDER_BACKPACK_ARMOR_RENDERER, Main.ENDER_BACKPACK);
 
         registerPacketHandlers();
     }

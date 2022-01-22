@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "inventory_backpack:backpack"
+    "inventory_backpack:backpack",
+    "inventory_backpack:ender_backpack"
   ]
 }

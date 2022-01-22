@@ -19,7 +19,6 @@ public class ServerPlayerEntityMixin {
     @Inject(at = @At("HEAD"), method = "onDisconnect", cancellable = true)
     private void onDisconnect(CallbackInfo ci) {
         if(!(getThis().currentScreenHandler instanceof BackpackScreenHandler && Utils.hasBackpack(getThis()))){ return; }
-        Main.LOGGER.warn("onDisconnect");
-        ((BackpackScreenHandler) getThis().currentScreenHandler).getBackpackInventory().saveContent();
+        ((BackpackScreenHandler) getThis().currentScreenHandler).saveInventory();
     }
 }

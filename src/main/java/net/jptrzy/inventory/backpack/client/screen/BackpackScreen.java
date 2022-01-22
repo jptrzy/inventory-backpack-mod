@@ -7,6 +7,7 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.mixin.HandledScreenAccessor;
 import net.jptrzy.inventory.backpack.mixin.ScreenAccessor;
+import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
@@ -26,8 +27,10 @@ public class BackpackScreen extends InventoryScreen {
 
     public static final Identifier BACKGROUND_TEXTURE = Main.id("textures/gui/backpack_inventory.png");
     public static final Identifier BACKGROUND_TEXTURE_OVERLAY = Main.id("textures/gui/backpack_inventory_overlay.png");
+    public static final Identifier ENDER_BACKGROUND_TEXTURE_OVERLAY = Main.id("textures/gui/ender_backpack_inventory_overlay.png");
 
     private boolean color = false;
+    private boolean isEnder;
 
     private float r = 1;
     private float g = 1;
@@ -57,6 +60,14 @@ public class BackpackScreen extends InventoryScreen {
     }
 
     protected void setColor(ItemStack stack){
+        isEnder = Utils.isEnderBackpack(stack);
+        if(isEnder){
+            r = 1;
+            g = 1;
+            b = 1;
+            return;
+        }
+
         int i = ((BackpackItem) stack.getItem()).getColor(stack);
 
 
@@ -80,7 +91,7 @@ public class BackpackScreen extends InventoryScreen {
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(r, g, b, 1);
-        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE_OVERLAY);
+        RenderSystem.setShaderTexture(0, isEnder ? ENDER_BACKGROUND_TEXTURE_OVERLAY : BACKGROUND_TEXTURE_OVERLAY);
         this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 
         drawEntity(this.x + 51, this.y + 75, 30, (float)(this.x + 51) - mouseX, (float)(this.y + 75 - 50) - mouseY, this.client.player);
@@ -89,7 +100,6 @@ public class BackpackScreen extends InventoryScreen {
 
     @Override
     public void init() {
-
         backgroundHeight = 224;
         super.init();
     }

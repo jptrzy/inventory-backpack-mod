@@ -1,18 +1,25 @@
 package net.jptrzy.inventory.backpack;
 
 import dev.emi.trinkets.api.*;
+import dev.emi.trinkets.api.client.TrinketRenderer;
+import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.jptrzy.inventory.backpack.config.AutoConfigManager;
+import net.jptrzy.inventory.backpack.integrations.trinkets.EnderBackpackTrinket;
+import net.jptrzy.inventory.backpack.item.BackpackArmorMaterial;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
-import net.jptrzy.inventory.backpack.integrations.BackpackTrinket;
+import net.jptrzy.inventory.backpack.integrations.trinkets.BackpackTrinket;
+import net.jptrzy.inventory.backpack.item.EnderBackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -27,8 +34,11 @@ public class Main implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 
-	public static final Identifier BACKPACK_ID = id("backpack");
+	public static final ArmorMaterial BACKPACK_ARMOR_MATERIAL = new BackpackArmorMaterial();
+
+
 	public static final Item BACKPACK = new BackpackItem();
+	public static final Item ENDER_BACKPACK = new EnderBackpackItem();
 
 	public static final ScreenHandlerType<BackpackScreenHandler> BACKPACK_SCREEN_HANDLER;
 
@@ -43,9 +53,11 @@ public class Main implements ModInitializer {
 
 		if(Utils.isModLoaded(Utils.TRINKETS_MOD_ID)){
 			BackpackTrinket.register();
+			EnderBackpackTrinket.register();
 		}
 
-		Registry.register(Registry.ITEM, BACKPACK_ID, BACKPACK);
+		Registry.register(Registry.ITEM, id("backpack"), BACKPACK);
+		Registry.register(Registry.ITEM, id("ender_backpack"), ENDER_BACKPACK);
 
 		registerEventsListiners();
 		registerPacketHandlers();

@@ -32,11 +32,11 @@ import java.util.Map;
 
 public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHandlerFactory {
 
-    private static final Text TITLE = new TranslatableText("container." + Main.MOD_ID + ".backpack");
+    protected static final Text TITLE = new TranslatableText("container." + Main.MOD_ID + ".backpack");
 
     public BackpackItem() {
         super(
-                ArmorMaterials.LEATHER,
+                Main.BACKPACK_ARMOR_MATERIAL,
                 EquipmentSlot.CHEST,
                 new Item.Settings().group(ItemGroup.COMBAT).maxDamage(-1)
         );

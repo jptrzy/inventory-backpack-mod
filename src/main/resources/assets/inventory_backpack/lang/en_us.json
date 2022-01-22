@@ -1,5 +1,6 @@
 {
   "item.inventory_backpack.backpack": "Backpack",
+  "item.inventory_backpack.ender_backpack": "Ender Backpack",
 
   "text.autoconfig.inventory_backpack.title": "Inventory Backpack Options",
 

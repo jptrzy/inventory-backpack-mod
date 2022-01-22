@@ -5,24 +5,26 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.mixin.ScreenHandlerAccessor;
 import net.jptrzy.inventory.backpack.mixin.SlotAccessor;
+import net.jptrzy.inventory.backpack.screen.slot.SafeSlot;
 import net.jptrzy.inventory.backpack.util.Utils;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class BackpackScreenHandler extends PlayerScreenHandler {
 
-    private BackpackInventory backpackInventory;
+    private SimpleInventory backpackInventory;
     public boolean dirtyBackpack = true;
     private final int backpackStart;
+    private final boolean isEnder;
 
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory.player);
@@ -55,17 +57,23 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         backpackStart = slots.size();
 
         ItemStack backpack = Utils.getBackpack(player);
-        backpackInventory = new BackpackInventory(backpack);
+        isEnder = Utils.isEnderBackpack(backpack);
+        if(isEnder){
+            backpackInventory = player.getEnderChestInventory();
+        }else{
+            backpackInventory = new BackpackInventory(backpack);
+
+        }
         backpackInventory.onOpen(player);
         for(int i = 0; i < 3; ++i)
             for(int j = 0; j < 9; ++j) {
                 int k = j + i * 9 + 36;
-                addSlot(new Slot(backpackInventory, k, left + j * 18, top + i * 18));
+                addSlot(new SafeSlot(backpackInventory, k, left + j * 18, top + i * 18));
             }
     }
 
-    public BackpackInventory getBackpackInventory(){
-        return this.backpackInventory;
+    public boolean getIsEnder(){
+        return this.isEnder;
     }
 
     @Override
@@ -136,5 +144,24 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
     @Override
     public ScreenHandlerType<?> getType() {
         return Main.BACKPACK_SCREEN_HANDLER;
+    }
+
+    public void saveInventory(){
+        if(isEnder){return;}
+        ((BackpackInventory) backpackInventory).saveContent();
+    }
+
+    public boolean isEmpty(){
+        return isEnder || backpackInventory.isEmpty();
+    }
+
+    public ItemStack getBackpackItemStack(){
+        return isEnder ? null : ((BackpackInventory) backpackInventory).getOwner();
+    }
+
+    @Override
+    public void onContentChanged(Inventory inventory) {
+        super.onContentChanged(inventory);
+        this.sendContentUpdates();
     }
 }

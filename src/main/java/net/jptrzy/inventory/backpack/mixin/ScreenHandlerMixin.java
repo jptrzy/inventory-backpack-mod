@@ -7,12 +7,14 @@ import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,11 +41,15 @@ public class ScreenHandlerMixin {
     @Unique
     public boolean takingOfBackpack = false;
 
+    @Unique
+    public ItemStack oldItemStack;
+
     @Inject(at = @At("HEAD"), method = "onSlotClick", cancellable = true)
     private void HEAD_onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if(player.world.isClient()){return;}
-        if((slotIndex<0 || slotIndex>=getThis().slots.size()) && slotIndex != -999){return;}
-        if(!(getThis() instanceof PlayerScreenHandler)){return;}
+
+        oldItemStack = player.getEquippedStack(EquipmentSlot.CHEST).copy();
+
 
         hadBackpack = getThis() instanceof BackpackScreenHandler;
         if(hadBackpack && slotIndex != -999) {
@@ -51,7 +57,7 @@ public class ScreenHandlerMixin {
             takingOfBackpack = Utils.hasBackpack(player, itemStack);
             if (takingOfBackpack) {
                 Utils.updateBackpackCurse(itemStack, player);
-                ((BackpackScreenHandler) getThis()).getBackpackInventory().saveContent();
+                ((BackpackScreenHandler) getThis()).saveInventory();
             }
         }
     }
@@ -59,23 +65,18 @@ public class ScreenHandlerMixin {
     @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
     private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if(player.world.isClient()){return;}
-        if((slotIndex<0 || slotIndex>=getThis().slots.size()) && slotIndex != -999){return;}
-        if(!(getThis() instanceof PlayerScreenHandler)){return;}
 
-        if(hadBackpack){
-            if(Utils.hasBackpack(player)){
-                if (!Utils.hasBackpack(player, getThisAsBackPack().getBackpackInventory().getOwner())) {
-                    Utils.openBackpackHandler(true, (ServerPlayerEntity) player);
-                }
-            }else{
-                Utils.openBackpackHandler(false, (ServerPlayerEntity) player);
+        ItemStack newItemStack = player.getEquippedStack(EquipmentSlot.CHEST);
+
+        if(!ItemStack.areEqual(oldItemStack, newItemStack)){
+            if(oldItemStack.getItem() instanceof BackpackItem){
+                Utils.onUnEquip((ServerPlayerEntity) player, oldItemStack);
             }
-        }else if(Utils.hasBackpack(player)){
-            Utils.openBackpackHandler(true, (ServerPlayerEntity) player);
+            if(newItemStack.getItem() instanceof BackpackItem){
+                Utils.onEquip((ServerPlayerEntity) player, newItemStack);
+            }
         }
-
-        hadBackpack = false;
-        takingOfBackpack = false;
+        oldItemStack = null;
 
         if(getThis() instanceof BackpackScreenHandler)
             ((BackpackScreenHandler) getThis()).dirtyBackpack = true;
