@@ -12,6 +12,7 @@ import net.jptrzy.inventory.backpack.client.renderer.BackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.util.Utils;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -48,17 +49,17 @@ public class BackpackTrinket implements Trinket, TrinketRenderer {
 
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if(!entity.world.isClient() && entity instanceof PlayerEntity
+        if(entity.world.isClient() && entity instanceof PlayerEntity
                 && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler){
-            Utils.onEquip((ServerPlayerEntity) entity, stack);
+            Utils.onEquip((ClientPlayerEntity) entity, stack);
         }
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if(!entity.world.isClient() && entity instanceof PlayerEntity
+        if(entity.world.isClient() && entity instanceof PlayerEntity
                 && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler){
-            Utils.onUnEquip((ServerPlayerEntity) entity, stack);
+            Utils.onUnEquip((ClientPlayerEntity) entity, stack);
         }
     }
 

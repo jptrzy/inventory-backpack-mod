@@ -27,35 +27,14 @@ public class ScreenHandlerMixin {
     private ScreenHandler getThis(){
         return ((ScreenHandler) (Object) this);
     }
-    private BackpackScreenHandler getThisAsBackPack(){
-        return ((BackpackScreenHandler) (Object) this);
-    }
-
-    //TODO could be a problem in the feature; may stacks could help with this
-//    @Unique
-//    public boolean try_open_inventory = false;
-//    @Unique
-//    public boolean try_open_backpack = false;
-    @Unique
-    public boolean hadBackpack = false;
-    @Unique
-    public boolean takingOfBackpack = false;
-
-    @Unique
-    public ItemStack oldItemStack;
 
     @Inject(at = @At("HEAD"), method = "onSlotClick", cancellable = true)
     private void HEAD_onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if(player.world.isClient()){return;}
+        if(player.world.isClient || slotIndex < 0 || slotIndex >= getThis().slots.size()){return;}
 
-        oldItemStack = player.getEquippedStack(EquipmentSlot.CHEST).copy();
-
-
-        hadBackpack = getThis() instanceof BackpackScreenHandler;
-        if(hadBackpack && slotIndex != -999) {
+        if(getThis() instanceof BackpackScreenHandler) {
             ItemStack itemStack = getThis().slots.get(slotIndex).getStack();
-            takingOfBackpack = Utils.hasBackpack(player, itemStack);
-            if (takingOfBackpack) {
+            if (Utils.hasBackpack(player, itemStack)) {
                 Utils.updateBackpackCurse(itemStack, player);
                 ((BackpackScreenHandler) getThis()).saveInventory();
             }
@@ -64,19 +43,7 @@ public class ScreenHandlerMixin {
 
     @Inject(at = @At("TAIL"), method = "onSlotClick", cancellable = true)
     private void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if(player.world.isClient()){return;}
-
-        ItemStack newItemStack = player.getEquippedStack(EquipmentSlot.CHEST);
-
-        if(!ItemStack.areEqual(oldItemStack, newItemStack)){
-            if(oldItemStack.getItem() instanceof BackpackItem){
-                Utils.onUnEquip((ServerPlayerEntity) player, oldItemStack);
-            }
-            if(newItemStack.getItem() instanceof BackpackItem){
-                Utils.onEquip((ServerPlayerEntity) player, newItemStack);
-            }
-        }
-        oldItemStack = null;
+        if(player.world.isClient){return;}
 
         if(getThis() instanceof BackpackScreenHandler)
             ((BackpackScreenHandler) getThis()).dirtyBackpack = true;

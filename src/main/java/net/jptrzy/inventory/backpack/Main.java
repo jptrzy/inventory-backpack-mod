@@ -77,12 +77,7 @@ public class Main implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(NETWORK_BACKPACK_OPEN_ID,
 				(server, player, networkHandler, buf, sender) -> {
 					server.execute(() -> {
-						if(player.currentScreenHandler == player.playerScreenHandler && Utils.hasBackpack(player)){
-							Utils.openBackpackHandler(true, player);
-						}else{
-							ServerPlayNetworking.send(player, Main.id("open_inventory"), new PacketByteBuf(Unpooled.buffer()));
-							Main.LOGGER.warn("This shouldn't be possible.");
-						}
+						Utils.openBackpackHandler(Utils.hasBackpack(player), player);
 					});
 				});
 	}

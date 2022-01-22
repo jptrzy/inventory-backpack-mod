@@ -38,6 +38,7 @@ public class BackpackScreen extends InventoryScreen {
 
     public BackpackScreen(PlayerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(inventory.player);
+//        super.tick();
         ((HandledScreenAccessor) this).setHandler(handler);
         checkColor();
     }

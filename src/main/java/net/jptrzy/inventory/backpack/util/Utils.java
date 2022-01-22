@@ -4,6 +4,7 @@ import dev.emi.trinkets.TrinketPlayerScreenHandler;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,6 +14,7 @@ import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -24,6 +26,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
@@ -72,7 +75,7 @@ public class Utils {
     public static ItemStack getBackpack(PlayerEntity player){
         ItemStack itemStack = player.getEquippedStack(EquipmentSlot.CHEST);
         if(itemStack.getItem() instanceof BackpackItem) {
-            return itemStack; //RETURNS AIR
+            return itemStack;
         }
 
         if(isTrinketsLoaded()) {
@@ -92,19 +95,7 @@ public class Utils {
     public static void updateBackpackCurse(ItemStack itemStack, PlayerEntity player){
         if(!itemStack.isOf(Main.BACKPACK)){return;}
 
-        boolean hasItems = true;
-        if(player.currentScreenHandler instanceof BackpackScreenHandler &&
-                ((BackpackScreenHandler) player.currentScreenHandler).getBackpackItemStack() == itemStack
-        ){
-            hasItems = !((BackpackScreenHandler) player.currentScreenHandler).isEmpty();
-        }else{
-            hasItems = false;
-            if(itemStack.getOrCreateNbt().contains("Items")){
-                hasItems = !itemStack.getNbt().getList("Items", 10).isEmpty();
-            }
-        }
-
-
+        boolean hasItems = !((BackpackScreenHandler) player.currentScreenHandler).isEmpty();
         Map<Enchantment, Integer> enchants = EnchantmentHelper.get(itemStack);
         boolean changedEnchants = false;
         boolean isCursed = enchants.containsKey(Enchantments.BINDING_CURSE);
@@ -126,32 +117,14 @@ public class Utils {
         }
     }
 
-    //Literally dropInventory from ScreenHandler with CraftingInput
-    public static void dropCraftingInventory(PlayerEntity player) {
-        PlayerScreenHandler sh = ((PlayerScreenHandler) player.currentScreenHandler);
-        int i;
-        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
-            for(i = 0; i < sh.getCraftingInput().size(); ++i) {
-                player.dropItem(sh.getCraftingInput().removeStack(i), false);
-            }
-        } else {
-            for(i = 0; i < sh.getCraftingInput().size(); ++i) {
-                PlayerInventory playerInventory = player.getInventory();
-                if (playerInventory.player instanceof ServerPlayerEntity) {
-                    playerInventory.offerOrDrop(sh.getCraftingInput().removeStack(i));
-                }
-            }
-        }
-    }
-
-    public static void onEquip(ServerPlayerEntity player, ItemStack stack) {
+    public static void onEquip(ClientPlayerEntity player, ItemStack stack) {
         if(Utils.hasBackpack(player, stack)){
-            Utils.openBackpackHandler(true, player);
+            ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
         }
     }
 
-    public static void onUnEquip(ServerPlayerEntity player, ItemStack stack) {
-        Utils.openBackpackHandler(Utils.hasBackpack(player), player);
+    public static void onUnEquip(ClientPlayerEntity player, ItemStack stack) {
+        ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
     }
 
     public static void openBackpackHandler(boolean open, ServerPlayerEntity player) {
@@ -159,34 +132,24 @@ public class Utils {
             Main.LOGGER.warn("Unauthorized use.");
             return;
         }
-//
-//        player.currentScreenHandler.updateToClient();
-//        player.currentScreenHandler.sendContentUpdates();
-
-//        if(Utils.isTrinketsLoaded())
-//            ((TrinketPlayerScreenHandler) player.playerScreenHandler).updateTrinketSlots(false);
 
         ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
         player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
 
-        Utils.dropCraftingInventory(player);
+        player.currentScreenHandler.close(player);
         if(open){
             player.openHandledScreen((ExtendedScreenHandlerFactory) Utils.getBackpack(player).getItem());
         }else{
-            ServerPlayNetworking.send(player, Client.NETWORK_OPEN_INVENTORY_ID, new PacketByteBuf(Unpooled.buffer()));
-            player.currentScreenHandler.close(player);
             player.currentScreenHandler = player.playerScreenHandler;
+            ServerPlayNetworking.send(player, Client.NETWORK_OPEN_INVENTORY_ID, new PacketByteBuf(Unpooled.buffer()));
         }
+
+        player.currentScreenHandler.setCursorStack(cursorStack);
 
         if(Utils.isTrinketsLoaded())
             ((TrinketPlayerScreenHandler) player.playerScreenHandler).updateTrinketSlots(false);
 
-        player.currentScreenHandler.setCursorStack(cursorStack);
-
-
-//        player.currentScreenHandler.updateToClient();
-        player.currentScreenHandler.sendContentUpdates();
-//        player.getInventory().updateItems();
+        player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, player.currentScreenHandler.nextRevision(), -1, cursorStack));
     }
 
     public static void onBackpackDrop(PlayerEntity player, ItemStack itemStack){

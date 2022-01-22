@@ -12,6 +12,7 @@ import net.jptrzy.inventory.backpack.client.renderer.EnderBackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.util.Utils;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -34,27 +35,6 @@ public class EnderBackpackTrinket extends BackpackTrinket {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-    }
-
-    @Override
-    public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        return entity instanceof PlayerEntity && ModConfig.trinkets;
-    }
-
-    @Override
-    public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if(!entity.world.isClient() && entity instanceof PlayerEntity
-                && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler){
-            Utils.onEquip((ServerPlayerEntity) entity, stack);
-        }
-    }
-
-    @Override
-    public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if(!entity.world.isClient() && entity instanceof PlayerEntity
-                && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler){
-            Utils.onUnEquip((ServerPlayerEntity) entity, stack);
-        }
     }
 
     @Override

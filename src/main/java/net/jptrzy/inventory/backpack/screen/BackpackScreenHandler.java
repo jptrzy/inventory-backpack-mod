@@ -24,7 +24,7 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
     private SimpleInventory backpackInventory;
     public boolean dirtyBackpack = true;
     private final int backpackStart;
-    private final boolean isEnder;
+    private boolean isEnder = false;
 
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory.player);
@@ -41,7 +41,7 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
         // client site. (I've worked on it for too long.)
         ((ScreenHandlerAccessor) this).setSyncId(syncId);
 
-        this.enableSyncing();
+//        this.enableSyncing();
 
         Inventory inventory = player.getInventory();
         for(Slot slot : slots){
@@ -62,9 +62,9 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
             backpackInventory = player.getEnderChestInventory();
         }else{
             backpackInventory = new BackpackInventory(backpack);
-
         }
         backpackInventory.onOpen(player);
+
         for(int i = 0; i < 3; ++i)
             for(int j = 0; j < 9; ++j) {
                 int k = j + i * 9 + 36;
@@ -157,11 +157,5 @@ public class BackpackScreenHandler extends PlayerScreenHandler {
 
     public ItemStack getBackpackItemStack(){
         return isEnder ? null : ((BackpackInventory) backpackInventory).getOwner();
-    }
-
-    @Override
-    public void onContentChanged(Inventory inventory) {
-        super.onContentChanged(inventory);
-        this.sendContentUpdates();
     }
 }
