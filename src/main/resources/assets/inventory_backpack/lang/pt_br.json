@@ -1,3 +1,8 @@
 {
-  "item.inventory_backpack.backpack": "Mochila"
+  "item.inventory_backpack.backpack": "Mochila",
+  "item.inventory_backpack.ender_backpack": "Mochila de Ender",
+
+  "text.autoconfig.inventory_backpack.title": "Opções da mochila",
+
+  "text.autoconfig.inventory_backpack.option.trinkets": "Trinkets"
 }
