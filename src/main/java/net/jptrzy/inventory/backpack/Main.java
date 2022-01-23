@@ -52,8 +52,8 @@ public class Main implements ModInitializer {
 		}
 
 		if(Utils.isModLoaded(Utils.TRINKETS_MOD_ID)){
-			BackpackTrinket.register();
-			EnderBackpackTrinket.register();
+			TrinketsApi.registerTrinket(Main.BACKPACK, BackpackTrinket.INSTANCE);
+			TrinketsApi.registerTrinket(Main.ENDER_BACKPACK, EnderBackpackTrinket.INSTANCE);
 		}
 
 		Registry.register(Registry.ITEM, id("backpack"), BACKPACK);

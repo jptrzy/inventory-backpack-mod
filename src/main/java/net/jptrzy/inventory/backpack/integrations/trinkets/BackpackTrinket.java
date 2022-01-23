@@ -5,35 +5,30 @@ import dev.emi.trinkets.api.Trinket;
 import dev.emi.trinkets.api.TrinketsApi;
 import dev.emi.trinkets.api.client.TrinketRenderer;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.client.Client;
-import net.jptrzy.inventory.backpack.client.model.BackpackModel;
 import net.jptrzy.inventory.backpack.client.renderer.BackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.util.Utils;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 
-public class BackpackTrinket implements Trinket, TrinketRenderer {
+public class BackpackTrinket implements Trinket {
 
-    public static void register() {
-        BackpackTrinket trinket = new BackpackTrinket();
-        TrinketsApi.registerTrinket(Main.BACKPACK, trinket);
-        TrinketRendererRegistry.registerRenderer(Main.BACKPACK, trinket);
-    }
+    protected BackpackTrinket(){}
+
+    public static final BackpackTrinket INSTANCE = new BackpackTrinket();
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
@@ -50,34 +45,38 @@ public class BackpackTrinket implements Trinket, TrinketRenderer {
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if(entity.world.isClient() && entity instanceof PlayerEntity
-                && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler){
-            Utils.onEquip((ClientPlayerEntity) entity, stack);
+                && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler) {
+            Utils.onEquip((PlayerEntity) entity, stack);
         }
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if(entity.world.isClient() && entity instanceof PlayerEntity
-                && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler){
-            Utils.onUnEquip((ClientPlayerEntity) entity, stack);
+                && ((PlayerEntity) entity).currentScreenHandler instanceof PlayerScreenHandler) {
+            Utils.onUnEquip((PlayerEntity) entity, stack);
         }
     }
 
-    @Override
-    public void render(ItemStack stack, SlotReference slotReference, EntityModel<? extends LivingEntity> contextModel, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, LivingEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        BipedEntityModel<LivingEntity> model = Client.BACKPACK_ARMOR_RENDERER.getModel();
+    @Environment(EnvType.CLIENT)
+    public static class Renderer implements TrinketRenderer {
 
-        int i = ((BackpackItem) stack.getItem()).getColor(stack);
-        float r = (float) (i >> 16 & 255) / 255.0F;
-        float g = (float) (i >> 8 & 255) / 255.0F;
-        float b = (float) (i & 255) / 255.0F;
+        @Override
+        public void render(ItemStack stack, SlotReference slotReference, EntityModel<? extends LivingEntity> contextModel, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, LivingEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+            BipedEntityModel<LivingEntity> model = Client.BACKPACK_ARMOR_RENDERER.getModel();
 
-        model.setAngles(entity, limbAngle, limbDistance, animationProgress, animationProgress, headPitch);
-        model.animateModel(entity, limbAngle, limbDistance, tickDelta);
+            int i = ((BackpackItem) stack.getItem()).getColor(stack);
+            float r = (float) (i >> 16 & 255) / 255.0F;
+            float g = (float) (i >> 8 & 255) / 255.0F;
+            float b = (float) (i & 255) / 255.0F;
 
-        TrinketRenderer.followBodyRotations(entity, model);
+            model.setAngles(entity, limbAngle, limbDistance, animationProgress, animationProgress, headPitch);
+            model.animateModel(entity, limbAngle, limbDistance, tickDelta);
 
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(model.getLayer(BackpackArmorRenderer.BACKPACK_MODEL_TEXTURE));
-        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, r, g, b, 1);
+            TrinketRenderer.followBodyRotations(entity, model);
+
+            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(model.getLayer(BackpackArmorRenderer.BACKPACK_MODEL_TEXTURE));
+            model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, r, g, b, 1);
+        }
     }
 }

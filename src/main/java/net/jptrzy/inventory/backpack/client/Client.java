@@ -1,7 +1,5 @@
 package net.jptrzy.inventory.backpack.client;
 
-import com.sun.jna.platform.win32.LMAccess;
-import dev.emi.trinkets.api.client.TrinketRenderer;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -10,16 +8,13 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.client.renderer.BackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.client.renderer.EnderBackpackArmorRenderer;
 import net.jptrzy.inventory.backpack.client.screen.BackpackScreen;
-import net.jptrzy.inventory.backpack.item.BackpackItem;
-import net.jptrzy.inventory.backpack.util.Utils;
-import net.minecraft.client.MinecraftClient;
+import net.jptrzy.inventory.backpack.integrations.trinkets.BackpackTrinket;
+import net.jptrzy.inventory.backpack.integrations.trinkets.EnderBackpackTrinket;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -49,6 +44,9 @@ public class Client implements ClientModInitializer {
 
         ArmorRenderer.register(BACKPACK_ARMOR_RENDERER, Main.BACKPACK);
         ArmorRenderer.register(ENDER_BACKPACK_ARMOR_RENDERER, Main.ENDER_BACKPACK);
+
+        TrinketRendererRegistry.registerRenderer(Main.BACKPACK, new BackpackTrinket.Renderer());
+        TrinketRendererRegistry.registerRenderer(Main.ENDER_BACKPACK, new EnderBackpackTrinket.Renderer());
 
         registerPacketHandlers();
     }

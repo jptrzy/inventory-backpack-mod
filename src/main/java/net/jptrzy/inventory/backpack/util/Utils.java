@@ -14,24 +14,17 @@ import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 
-import java.util.List;
 import java.util.Map;
 
 public class Utils {
@@ -117,13 +110,13 @@ public class Utils {
         }
     }
 
-    public static void onEquip(ClientPlayerEntity player, ItemStack stack) {
+    public static void onEquip(PlayerEntity player, ItemStack stack) {
         if(Utils.hasBackpack(player, stack)){
             ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
         }
     }
 
-    public static void onUnEquip(ClientPlayerEntity player, ItemStack stack) {
+    public static void onUnEquip(PlayerEntity player, ItemStack stack) {
         ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
     }
 
