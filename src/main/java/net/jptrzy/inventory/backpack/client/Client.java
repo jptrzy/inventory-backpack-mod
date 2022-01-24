@@ -23,9 +23,6 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class Client implements ClientModInitializer {
-
-    public static final Identifier NETWORK_OPEN_INVENTORY_ID = Main.id("open_inventory");
-    public static final Identifier NETWORK_RELOAD_SCREEN_ID = Main.id("reload_screen");
     public static final BackpackArmorRenderer BACKPACK_ARMOR_RENDERER = new BackpackArmorRenderer();
     public static final EnderBackpackArmorRenderer ENDER_BACKPACK_ARMOR_RENDERER = new EnderBackpackArmorRenderer();
 
@@ -52,13 +49,13 @@ public class Client implements ClientModInitializer {
     }
 
     private void registerPacketHandlers() {
-        ClientPlayNetworking.registerGlobalReceiver(NETWORK_OPEN_INVENTORY_ID,
+        ClientPlayNetworking.registerGlobalReceiver(Main.NETWORK_OPEN_INVENTORY_ID,
                 (client, handler, buf, sender) -> {
                     client.execute(() -> {
                         client.setScreen(new InventoryScreen(client.player));
                     });
                 });
-        ClientPlayNetworking.registerGlobalReceiver(NETWORK_RELOAD_SCREEN_ID,
+        ClientPlayNetworking.registerGlobalReceiver(Main.NETWORK_RELOAD_SCREEN_ID,
                 (client, handler, buf, sender) -> {
                     client.execute(() -> {
                         if(client.currentScreen instanceof BackpackScreen)

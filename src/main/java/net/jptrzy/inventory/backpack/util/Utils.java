@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jptrzy.inventory.backpack.Main;
-import net.jptrzy.inventory.backpack.client.Client;
 import net.jptrzy.inventory.backpack.config.ModConfig;
 import net.jptrzy.inventory.backpack.inventory.BackpackInventory;
 import net.jptrzy.inventory.backpack.item.BackpackItem;
@@ -134,7 +133,7 @@ public class Utils {
             player.openHandledScreen((ExtendedScreenHandlerFactory) Utils.getBackpack(player).getItem());
         }else{
             player.currentScreenHandler = player.playerScreenHandler;
-            ServerPlayNetworking.send(player, Client.NETWORK_OPEN_INVENTORY_ID, new PacketByteBuf(Unpooled.buffer()));
+            ServerPlayNetworking.send(player, Main.NETWORK_OPEN_INVENTORY_ID, new PacketByteBuf(Unpooled.buffer()));
         }
 
         player.currentScreenHandler.setCursorStack(cursorStack);

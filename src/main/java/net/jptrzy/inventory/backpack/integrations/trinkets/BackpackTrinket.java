@@ -32,7 +32,7 @@ public class BackpackTrinket implements Trinket {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if(entity instanceof PlayerEntity){
+        if(entity instanceof PlayerEntity) {
             BackpackItem.tick(stack, (PlayerEntity) entity);
         }
     }
