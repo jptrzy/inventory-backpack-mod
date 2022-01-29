@@ -1,6 +1,9 @@
 plugins {
 	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
+	id "com.modrinth.minotaur" version "1.2.1"
+	id 'groovy'
+	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -91,5 +94,39 @@ publishing {
 		// Notice: This block does NOT have the same function as the block in the top level.
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
+	}
+}
+
+//Simple Publish
+import com.modrinth.minotaur.TaskModrinthUpload
+import groovy.json.JsonSlurper
+
+tasks.register('publishModrinth', TaskModrinthUpload) {
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+	def changelogFile = file('CHANGELOG.md')
+
+	def jsonFile = file('src/main/resources/fabric.mod.json')
+	def parsedJson = new JsonSlurper().parseText(jsonFile.text)
+
+	def mod_name = parsedJson.name
+	def minecraft_version = parsedJson.depends.minecraft
+
+	println "Enter a Github Access Token: "
+
+	token = br.readLine();
+	projectId = project.modrinth_projectId
+	versionNumber = project.mod_version+"-"+minecraft_version
+	versionName = mod_name + " " + versionNumber
+	uploadFile = remapJar
+	project.modrinth_versions.split(',').each(version -> {
+		addGameVersion(version)
+	})
+	addLoader('fabric')
+
+	if(changelogFile.text.contains("## "+project.mod_version)){
+		changelog = changelogFile.text.split("## "+project.mod_version)[1].split("\n\n")[0]
+	}else{
+		println "Can't find changelog for this version"
 	}
 }
