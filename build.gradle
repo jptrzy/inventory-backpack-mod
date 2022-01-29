@@ -101,32 +101,85 @@ publishing {
 import com.modrinth.minotaur.TaskModrinthUpload
 import groovy.json.JsonSlurper
 
+String publishVersionNumber;
+String publishVersionName;
+String publishChangelog;
+
+File changelogFile = file('CHANGELOG.md')
+File jsonFile = file('src/main/resources/fabric.mod.json')
+
+def parsedJson = new JsonSlurper().parseText(jsonFile.text)
+
+String minecraft_version = parsedJson.depends.minecraft
+String mod_name = parsedJson.name
+
+publishVersionNumber = project.mod_version+"-"+minecraft_version;
+publishVersionName =  mod_name + " " + publishVersionNumber
+
+if(changelogFile.text.contains("## "+project.mod_version)){
+	publishChangelog = changelogFile.text.split("## "+project.mod_version)[1].split("\n\n")[0]
+}else{
+	println "Can't find changelog for this version"
+}
+
+curseforge {
+	apiKey = System.getenv("CURSEFORGE_TOKEN") ? System.getenv("CURSEFORGE_TOKEN") : ""
+	project {
+		id = project.curseforge_projectId
+		releaseType = "release"
+
+		project.modrinth_versions.split(',').each(version -> { addGameVersion(version) })
+
+		changelogType = 'markdown'
+		changelog = publishChangelog
+
+		relations{
+			requiredDependency 'fabric-api'
+			optionalDependency 'cloth-config'
+			optionalDependency 'modmenu'
+			optionalDependency 'trinkets-fabric'
+		}
+
+		afterEvaluate{
+			mainArtifact(jar){
+				displayName = publishVersionName
+			}
+			uploadTask.dependsOn(jar)
+		}
+	}
+	options{
+		forgeGradleIntegration = false
+	}
+}
+
 tasks.register('publishModrinth', TaskModrinthUpload) {
-	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//
+//	println "Enter a Github Access Token: "
+//
+//	token = br.readLine();
+	if(!System.getenv("GITHUB_TOKEN")){
+		println "Can't find `GITHUB_TOKEN`"
+	}
 
-	def changelogFile = file('CHANGELOG.md')
+	onlyIf {
+		System.getenv("GITHUB_TOKEN") // Only attempt to run this task if the MODRINTH variable is set, otherwise SKIP it
+	}
 
-	def jsonFile = file('src/main/resources/fabric.mod.json')
-	def parsedJson = new JsonSlurper().parseText(jsonFile.text)
 
-	def mod_name = parsedJson.name
-	def minecraft_version = parsedJson.depends.minecraft
 
-	println "Enter a Github Access Token: "
-
-	token = br.readLine();
+	token = System.getenv("GITHUB_TOKEN")
 	projectId = project.modrinth_projectId
-	versionNumber = project.mod_version+"-"+minecraft_version
-	versionName = mod_name + " " + versionNumber
+	versionNumber = publishVersionNumber
+	versionName = publishVersionName
 	uploadFile = remapJar
-	project.modrinth_versions.split(',').each(version -> {
-		addGameVersion(version)
-	})
+	project.modrinth_versions.split(',').each(version -> { addGameVersion(version) })
 	addLoader('fabric')
 
-	if(changelogFile.text.contains("## "+project.mod_version)){
-		changelog = changelogFile.text.split("## "+project.mod_version)[1].split("\n\n")[0]
-	}else{
-		println "Can't find changelog for this version"
-	}
+	changelog = publishChangelog
+}
+
+tasks.register('publishMod') {
+	publishModrinth()
+	curseforge(project.curseforge_projectId)
 }
