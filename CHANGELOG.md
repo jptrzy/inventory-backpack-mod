@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.3
+* fix #9, #10 bugs
+
 ## 0.2.2
 * adds ender backpack recipe
 

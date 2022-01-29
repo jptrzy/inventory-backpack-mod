@@ -1,3 +1,6 @@
 {
-  "item.inventory_backpack.backpack": "Plecak"
+  "item.inventory_backpack.backpack": "Plecak",
+  "item.inventory_backpack.ender_backpack": "Plecak Endu",
+
+  "text.autoconfig.inventory_backpack.title": "Ekwipunkowy Plecak Opcje"
 }
