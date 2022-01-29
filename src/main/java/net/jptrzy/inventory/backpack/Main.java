@@ -1,10 +1,7 @@
 package net.jptrzy.inventory.backpack;
 
 import dev.emi.trinkets.api.*;
-import dev.emi.trinkets.api.client.TrinketRenderer;
-import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -16,13 +13,11 @@ import net.jptrzy.inventory.backpack.integrations.trinkets.BackpackTrinket;
 import net.jptrzy.inventory.backpack.item.EnderBackpackItem;
 import net.jptrzy.inventory.backpack.screen.BackpackScreenHandler;
 import net.jptrzy.inventory.backpack.util.Utils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;

@@ -4,6 +4,8 @@ import dev.emi.trinkets.TrinketPlayerScreenHandler;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -18,20 +20,13 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
-
-import java.util.List;
 import java.util.Map;
 
 public class Utils {
@@ -117,16 +112,19 @@ public class Utils {
         }
     }
 
+    @Environment(EnvType.CLIENT)
     public static void onEquip(ClientPlayerEntity player, ItemStack stack) {
         if(Utils.hasBackpack(player, stack)){
             ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
         }
     }
 
+    @Environment(EnvType.CLIENT)
     public static void onUnEquip(ClientPlayerEntity player, ItemStack stack) {
         ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
     }
 
+    @Environment(EnvType.SERVER)
     public static void openBackpackHandler(boolean open, ServerPlayerEntity player) {
         if(player.world.isClient()){
             Main.LOGGER.warn("Unauthorized use.");

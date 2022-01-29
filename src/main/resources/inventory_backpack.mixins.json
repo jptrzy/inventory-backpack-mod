@@ -2,22 +2,22 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.jptrzy.inventory.backpack.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "SlotAccessor",
-    "HandledScreenAccessor",
     "ScreenHandlerAccessor",
     "SimpleInventoryAccessor",
-    "ScreenAccessor",
-    "MouseAccessor",
     "ScreenHandlerMixin",
-    "MinecraftClientMixin",
     "PlayerEntityMixin",
     "CauldronBehaviorMixin",
-    "ClientNetworkingMixin",
     "ServerPlayerEntityMixin"
   ],
   "client": [
+    "HandledScreenAccessor",
+    "ScreenAccessor",
+    "MouseAccessor",
+    "MinecraftClientMixin",
+    "ClientNetworkingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

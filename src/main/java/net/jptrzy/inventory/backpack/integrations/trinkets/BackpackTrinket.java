@@ -5,6 +5,8 @@ import dev.emi.trinkets.api.Trinket;
 import dev.emi.trinkets.api.TrinketsApi;
 import dev.emi.trinkets.api.client.TrinketRenderer;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.jptrzy.inventory.backpack.Main;
 import net.jptrzy.inventory.backpack.client.Client;
 import net.jptrzy.inventory.backpack.client.model.BackpackModel;
@@ -64,6 +66,7 @@ public class BackpackTrinket implements Trinket, TrinketRenderer {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public void render(ItemStack stack, SlotReference slotReference, EntityModel<? extends LivingEntity> contextModel, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, LivingEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         BipedEntityModel<LivingEntity> model = Client.BACKPACK_ARMOR_RENDERER.getModel();
 

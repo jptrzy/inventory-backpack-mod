@@ -2,6 +2,7 @@
 
 ## 0.2.3
 * fix #9, #10 bugs
+* update Polish and Brazilian Portuguese languages
 
 ## 0.2.2
 * adds ender backpack recipe
@@ -19,7 +20,7 @@
 * adds support for trinkets 
 * optimize core events code (run better)
 * on player disconnect backpack is saving
-* adds support for Polish and Brazilian Portuguese language (by ppblitto)
+* adds support for Polish and Brazilian Portuguese languages (by ppblitto)
 
 ## 0.1.2
 * optimize mixins amount
