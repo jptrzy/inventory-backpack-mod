@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -17,6 +18,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,11 +40,15 @@ public class MinecraftClientMixin {
     private ClientPlayerEntity player;
 
     @Shadow
+    @Final
+    private GameOptions options;
+    @Shadow
     @Nullable
     private Screen currentScreen;
 
     @Inject(at = @At("HEAD"), method = "setScreen", cancellable = true)
     private void setScreen(@Nullable Screen screen, CallbackInfo ci){
+        Main.LOGGER.warn(options.keyInventory.wasPressed());
         if(screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && Utils.hasBackpack(player)){
             ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
             ci.cancel();
