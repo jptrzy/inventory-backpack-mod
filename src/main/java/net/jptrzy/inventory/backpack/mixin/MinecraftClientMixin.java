@@ -33,6 +33,9 @@ import java.util.Map;
 public class MinecraftClientMixin {
 
     @Unique
+    private boolean openInventory = false;
+
+    @Unique
     private ItemStack oldItemStack = new ItemStack(Items.AIR);
 
     @Shadow
@@ -48,8 +51,8 @@ public class MinecraftClientMixin {
 
     @Inject(at = @At("HEAD"), method = "setScreen", cancellable = true)
     private void setScreen(@Nullable Screen screen, CallbackInfo ci){
-        Main.LOGGER.warn(options.keyInventory.wasPressed());
-        if(screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && Utils.hasBackpack(player)){
+        if(openInventory && screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && Utils.hasBackpack(player)){
+            openInventory = false;
             ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
             ci.cancel();
         }
@@ -71,5 +74,11 @@ public class MinecraftClientMixin {
 
             oldItemStack = newItemStack.copy();
         }
+    }
+
+    //this.tutorialManager.onInventoryOpened();
+    @Inject(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/tutorial/TutorialManager;onInventoryOpened()V"))
+    private void beforeInventoryOpen(CallbackInfo info) {
+        openInventory = true;
     }
 }
