@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.4
+* fix #12
+
 ## 0.2.3
 * fix #9, #10, #11 bugs
 * update Polish and Brazilian Portuguese languages

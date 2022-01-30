@@ -124,12 +124,11 @@ public class Utils {
         ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
     }
 
-    @Environment(EnvType.SERVER)
     public static void openBackpackHandler(boolean open, ServerPlayerEntity player) {
-//        if(player.world.isClient()){
-//            Main.LOGGER.warn("Unauthorized use.");
-//            return;
-//        }
+        if(player.world.isClient()){
+            Main.LOGGER.warn("Unauthorized use.");
+            return;
+        }
 
         ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
         player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);

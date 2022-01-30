@@ -51,10 +51,12 @@ public class MinecraftClientMixin {
 
     @Inject(at = @At("HEAD"), method = "setScreen", cancellable = true)
     private void setScreen(@Nullable Screen screen, CallbackInfo ci){
-        if(openInventory && screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && Utils.hasBackpack(player)){
+        if(openInventory){
             openInventory = false;
-            ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
-            ci.cancel();
+            if(screen instanceof InventoryScreen && !(screen instanceof BackpackScreen) && Utils.hasBackpack(player)){
+                ClientPlayNetworking.send(Main.NETWORK_BACKPACK_OPEN_ID, new PacketByteBuf(Unpooled.buffer()));
+                ci.cancel();
+            }
         }
     }
 
