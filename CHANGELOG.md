@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.2.4
-* fix #12
+* fix #12 and some other smaller bugs
 
 ## 0.2.3
 * fix #9, #10, #11 bugs
