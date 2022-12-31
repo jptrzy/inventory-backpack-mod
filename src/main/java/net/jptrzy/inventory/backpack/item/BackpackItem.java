@@ -23,8 +23,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +33,7 @@ import java.util.Map;
 
 public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHandlerFactory {
 
-    protected static final Text TITLE = new TranslatableText("container." + Main.MOD_ID + ".backpack");
+    protected static final Text TITLE = MutableText.of(new TranslatableTextContent("container." + Main.MOD_ID + ".backpack"));
 
     public BackpackItem() {
         super(
@@ -81,6 +82,6 @@ public class BackpackItem extends DyeableArmorItem implements ExtendedScreenHand
 
     @Override
     public Text getDisplayName() {
-        return null;
+        return TITLE;
     }
 }
