@@ -144,7 +144,7 @@ public class Utils {
         player.currentScreenHandler.setCursorStack(cursorStack);
 
         if(Utils.isTrinketsLoaded())
-            ((TrinketPlayerScreenHandler) player.playerScreenHandler).updateTrinketSlots(false);
+            ((TrinketPlayerScreenHandler) player.playerScreenHandler).trinkets$updateTrinketSlots(false);
 
         player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, player.currentScreenHandler.nextRevision(), -1, cursorStack));
     }
